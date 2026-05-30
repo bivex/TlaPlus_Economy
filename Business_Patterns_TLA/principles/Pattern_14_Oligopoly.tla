@@ -1,5 +1,5 @@
 -------------------- MODULE Pattern_14_Oligopoly --------------------
-EXTENDS Naturals, Strings
+EXTENDS Naturals, Integers
 
 VARIABLES 
     actionA, 

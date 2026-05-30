@@ -27,8 +27,8 @@ Init ==
 NextYear ==
     /\ year < 10
     /\ year' = year + 1
-    /\ cpi' = cpi + (cpi * INFLATION_RATE \div 100)
-    /\ nominal_revenue' = nominal_revenue + (nominal_revenue * NOMINAL_GROWTH \div 100)
+    /\ cpi' = cpi + ((cpi * INFLATION_RATE) \div 100)
+    /\ nominal_revenue' = nominal_revenue + ((nominal_revenue * NOMINAL_GROWTH) \div 100)
     /\ real_revenue' = (nominal_revenue' * 100) \div cpi'
 
 Next == NextYear

@@ -35,6 +35,7 @@ InvestInMarketing ==
     /\ budget' = budget - 5
     /\ marketing' = marketing + 1
     /\ revenue' = revenue + (features * 5) \* Эффект синергии
+    /\ UNCHANGED <<features>>
 
 Next == InvestInProduct \/ InvestInMarketing
 
