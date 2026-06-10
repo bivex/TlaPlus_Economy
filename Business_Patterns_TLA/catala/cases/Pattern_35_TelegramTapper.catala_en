@@ -1,0 +1,97 @@
+# Pattern 35: Telegram Tapper Game
+
+This case study models a Telegram Mini App (Tapper/Tap-to-Earn) game, showing how viral marketing loops, token sinks, and attention-based monetization lead to a financially viable and successful business model.
+
+## Scope Declaration
+
+```catala
+declaration scope TelegramTapperGame:
+  # Constants/Parameters
+  input viral_coefficient content decimal  # e.g. 1.25 (125.0%) representing viral growth factor
+  input ad_revenue_per_hour content money   # USD earned per hour of user attention
+  input sponsor_payout content money        # USD earned per sponsored B2B user subscription
+  input upgrade_price_coins content money    # Cost of in-game upgrade sink
+  input upgrade_yield_percent content decimal # Increase in retention/yield per upgrade
+
+  # State variables
+  input user_base content integer
+  input minted_coins content money
+  input burned_coins content money
+  input real_usd_revenue content money
+  input user_retention content decimal
+  input time_spent_hours content integer
+
+  # Action choices
+  input action_viral_referral content boolean
+  input action_tap_and_ad_boost content boolean
+  input action_buy_upgrade_sink content boolean
+  input action_complete_sponsored_task content boolean
+
+  # Updated state variables
+  output new_user_base content integer
+  output new_minted_coins content money
+  output new_burned_coins content money
+  output new_real_usd_revenue content money
+  output new_user_retention content decimal
+  output new_time_spent_hours content integer
+```
+
+## Rules and Definitions
+
+```catala
+scope TelegramTapperGame:
+  # 1. Viral Referral Loop: Increases user base exponentially based on viral coefficient
+  definition new_user_base equals
+    if action_viral_referral and user_base > 0 then
+      let growth equals integer of (decimal of user_base * viral_coefficient) in
+      user_base + growth
+    else
+      user_base
+
+  # 2. Attention Monetization: Users watch ads to boost tapping power, increasing ad revenue
+  # Each user spends 1 hour tapping, creating coins and watching ads
+  definition new_time_spent_hours equals
+    if action_tap_and_ad_boost then
+      time_spent_hours + user_base
+    else
+      time_spent_hours
+
+  definition new_real_usd_revenue equals
+    if action_tap_and_ad_boost then
+      # Attention is converted to real USD revenue
+      let ad_yield equals decimal of user_base * ad_revenue_per_hour in
+      real_usd_revenue + ad_yield
+    else if action_complete_sponsored_task then
+      # B2B sponsorships: direct sponsor payout
+      let sponsor_yield equals decimal of user_base * sponsor_payout in
+      real_usd_revenue + sponsor_yield
+    else
+      real_usd_revenue
+
+  # 3. Minting Coins: Tapping mints new in-game tokens
+  definition new_minted_coins equals
+    if action_tap_and_ad_boost then
+      # Users tap and get in-game coins (e.g. $10.00 coins per hour)
+      minted_coins + (decimal of user_base * $10.00)
+    else if action_complete_sponsored_task then
+      # Users get in-game coin reward for sponsored subscription (e.g. $50.00 coins)
+      minted_coins + (decimal of user_base * $50.00)
+    else
+      minted_coins
+
+  # 4. Token Sinks: Reinvesting coins into upgrades burns the coins to control inflation and boost retention
+  definition new_burned_coins equals
+    if action_buy_upgrade_sink and (minted_coins - burned_coins) >= (decimal of user_base * upgrade_price_coins) then
+      burned_coins + (decimal of user_base * upgrade_price_coins)
+    else
+      burned_coins
+
+  definition new_user_retention equals
+    if action_buy_upgrade_sink and (minted_coins - burned_coins) >= (decimal of user_base * upgrade_price_coins) then
+      if user_retention + upgrade_yield_percent > 100.0% then
+        100.0%
+      else
+        user_retention + upgrade_yield_percent
+    else
+      user_retention
+```
