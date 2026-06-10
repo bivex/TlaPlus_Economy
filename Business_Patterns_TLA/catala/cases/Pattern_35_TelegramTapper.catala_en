@@ -1,46 +1,74 @@
 # Pattern 35: Telegram Tapper Game
 
-This case study models a Telegram Mini App (Tapper/Tap-to-Earn) game, showing how viral marketing loops, token sinks, and attention-based monetization lead to a financially viable and successful business model.
+> Include: ../Pattern_04_Funnel.catala_en
+
+This case study models a Telegram Mini App (Tapper/Tap-to-Earn) game, demonstrating reuse and composition by nesting the base Funnel model (`Pattern04Funnel`) as a sub-scope to calculate traffic conversion and monetization.
 
 ## Scope Declaration
 
 ```catala
 declaration scope TelegramTapperGame:
   # Constants/Parameters
-  input viral_coefficient content decimal  # e.g. 1.25 (125.0%) representing viral growth factor
-  input ad_revenue_per_hour content money   # USD earned per hour of user attention
-  input sponsor_payout content money        # USD earned per sponsored B2B user subscription
-  input upgrade_price_coins content money    # Cost of in-game upgrade sink
-  input upgrade_yield_percent content decimal # Increase in retention/yield per upgrade
+  input viral_coefficient content decimal
+  input upgrade_price_coins content money
+  input upgrade_yield_percent content decimal
 
   # State variables
   input user_base content integer
   input minted_coins content money
   input burned_coins content money
-  input real_usd_revenue content money
   input user_retention content decimal
   input time_spent_hours content integer
 
+  # Funnel state variables
+  input funnel_content content integer
+  input cold_traffic content integer
+  input warm_audience content integer
+  input leads content integer
+  input revenue content money
+
   # Action choices
   input action_viral_referral content boolean
-  input action_tap_and_ad_boost content boolean
   input action_buy_upgrade_sink content boolean
   input action_complete_sponsored_task content boolean
+
+  # Funnel action choices
+  input action_create_content content boolean
+  input action_get_traffic content boolean
+  input action_warm_up content boolean
+  input action_capture_leads content boolean
+  input action_sell_product content boolean
+
+  # Sub-scope reuse declaration
+  funnel scope Pattern04Funnel
 
   # Updated state variables
   output new_user_base content integer
   output new_minted_coins content money
   output new_burned_coins content money
-  output new_real_usd_revenue content money
   output new_user_retention content decimal
   output new_time_spent_hours content integer
+  output new_revenue content money
 ```
 
 ## Rules and Definitions
 
 ```catala
 scope TelegramTapperGame:
-  # 1. Viral Referral Loop: Increases user base exponentially based on viral coefficient
+  # Bind inputs to sub-scope
+  definition funnel.funnel_content equals funnel_content
+  definition funnel.cold_traffic equals cold_traffic
+  definition funnel.warm_audience equals warm_audience
+  definition funnel.leads equals leads
+  definition funnel.revenue equals revenue
+
+  definition funnel.action_create_content equals action_create_content
+  definition funnel.action_get_traffic equals action_get_traffic
+  definition funnel.action_warm_up equals action_warm_up
+  definition funnel.action_capture_leads equals action_capture_leads
+  definition funnel.action_sell_product equals action_sell_product
+
+  # 1. Viral Referral Loop
   definition new_user_base equals
     if action_viral_referral and user_base > 0 then
       let growth equals integer of (decimal of user_base * viral_coefficient) in
@@ -48,38 +76,23 @@ scope TelegramTapperGame:
     else
       user_base
 
-  # 2. Attention Monetization: Users watch ads to boost tapping power, increasing ad revenue
-  # Each user spends 1 hour tapping, creating coins and watching ads
+  # 2. Time spent
   definition new_time_spent_hours equals
-    if action_tap_and_ad_boost then
+    if action_get_traffic then
       time_spent_hours + user_base
     else
       time_spent_hours
 
-  definition new_real_usd_revenue equals
-    if action_tap_and_ad_boost then
-      # Attention is converted to real USD revenue
-      let ad_yield equals decimal of user_base * ad_revenue_per_hour in
-      real_usd_revenue + ad_yield
-    else if action_complete_sponsored_task then
-      # B2B sponsorships: direct sponsor payout
-      let sponsor_yield equals decimal of user_base * sponsor_payout in
-      real_usd_revenue + sponsor_yield
-    else
-      real_usd_revenue
-
-  # 3. Minting Coins: Tapping mints new in-game tokens
+  # 3. Minting Coins
   definition new_minted_coins equals
-    if action_tap_and_ad_boost then
-      # Users tap and get in-game coins (e.g. $10.00 coins per hour)
+    if action_get_traffic then
       minted_coins + (decimal of user_base * $10.00)
     else if action_complete_sponsored_task then
-      # Users get in-game coin reward for sponsored subscription (e.g. $50.00 coins)
       minted_coins + (decimal of user_base * $50.00)
     else
       minted_coins
 
-  # 4. Token Sinks: Reinvesting coins into upgrades burns the coins to control inflation and boost retention
+  # 4. Token Sinks
   definition new_burned_coins equals
     if action_buy_upgrade_sink and (minted_coins - burned_coins) >= (decimal of user_base * upgrade_price_coins) then
       burned_coins + (decimal of user_base * upgrade_price_coins)
@@ -94,4 +107,7 @@ scope TelegramTapperGame:
         user_retention + upgrade_yield_percent
     else
       user_retention
+
+  # 5. Output from sub-scope
+  definition new_revenue equals funnel.new_revenue
 ```
