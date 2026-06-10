@@ -7,7 +7,7 @@ This pattern models the limits of forecasting using Bertrand Russell's Turkey Pa
 ```catala
 declaration scope Pattern25ForecastingLimits:
   # State variables
-  input day content integer
+  input current_day content integer
   input confidence_level content integer
   input alive content boolean
 
@@ -26,21 +26,21 @@ declaration scope Pattern25ForecastingLimits:
 ```catala
 scope Pattern25ForecastingLimits:
   definition new_alive equals
-    if action_black_swan and day = 100 and alive then
+    if action_black_swan and current_day = 100 and alive then
       false
     else
       alive
 
   definition new_day equals
-    if action_normal_day and alive and day < 100 then
-      day + 1
+    if action_normal_day and alive and current_day < 100 then
+      current_day + 1
     else
-      day
+      current_day
 
   definition new_confidence_level equals
-    if action_normal_day and alive and day < 100 then
+    if action_normal_day and alive and current_day < 100 then
       confidence_level + 1
-    else if action_black_swan and day = 100 and alive then
+    else if action_black_swan and current_day = 100 and alive then
       0
     else
       confidence_level

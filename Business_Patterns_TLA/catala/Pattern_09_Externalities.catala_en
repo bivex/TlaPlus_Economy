@@ -54,7 +54,6 @@ scope Pattern09Externalities:
       social_damage
 
   definition new_total_social_welfare equals
-    new_private_profit - new_social_damage + (new_pigouvian_tax_revenue)
-    where new_pigouvian_tax_revenue equals
-      decimal of new_production_volume * pigouvian_tax
+    let new_pigouvian_tax_revenue equals decimal of new_production_volume * pigouvian_tax in
+    new_private_profit - new_social_damage + new_pigouvian_tax_revenue
 ```

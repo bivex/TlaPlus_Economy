@@ -83,7 +83,7 @@ scope Pattern29UnifiedStrategy:
     if action_generate_leads and portfolio_size >= 3 and time_pool >= 5 then
       leads_low + 5
     else if action_screen_leads and (leads_low + leads_main + leads_high) > 5 and time_pool >= 1 then
-      leads_low / 2
+      integer of (decimal of leads_low / 2.0)
     else if action_sell_entry and leads_low > 0 and time_pool >= 2 then
       leads_low - 1
     else
@@ -93,7 +93,7 @@ scope Pattern29UnifiedStrategy:
     if action_generate_leads and portfolio_size >= 3 and time_pool >= 5 then
       leads_main + 3
     else if action_screen_leads and (leads_low + leads_main + leads_high) > 5 and time_pool >= 1 then
-      leads_main / 2
+      integer of (decimal of leads_main / 2.0)
     else if action_sell_main and leads_main > 0 and time_pool >= production_time_ai then
       leads_main - 1
     else

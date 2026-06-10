@@ -36,25 +36,25 @@ declaration scope Pattern21MacroShocks:
 ```catala
 scope Pattern21MacroShocks:
   definition new_stage equals
-    match stage with
-      -- Equilibrium: if action_demand_shock then -- Recession else -- Equilibrium
-      -- Recession: if action_self_correction then -- Recovered else -- Recession
+    match stage with pattern
+      -- Equilibrium: if action_demand_shock then Recession else Equilibrium
+      -- Recession: if action_self_correction then Recovered else Recession
       -- Recovered: stage
 
   definition new_gdp equals
-    match stage with
+    match stage with pattern
       -- Equilibrium: if action_demand_shock then gdp - $20.00 else gdp
       -- Recession: if action_self_correction then natural_gdp else gdp
       -- Recovered: gdp
 
   definition new_price_level equals
-    match stage with
+    match stage with pattern
       -- Equilibrium: if action_demand_shock then price_level - 10.0% else price_level
       -- Recession: if action_self_correction then price_level - 10.0% else price_level
       -- Recovered: price_level
 
   definition new_expected_price_level equals
-    match stage with
+    match stage with pattern
       -- Equilibrium: expected_price_level
       -- Recession: if action_self_correction then price_level else expected_price_level
       -- Recovered: expected_price_level

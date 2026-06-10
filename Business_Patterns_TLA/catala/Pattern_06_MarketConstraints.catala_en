@@ -46,14 +46,14 @@ scope Pattern06MarketConstraints:
   definition new_demand equals
     if (action_price_increases and demand > supply and price < price_ceiling) or
        (action_price_decreases and supply > demand and price > $1.00) then
-      20 - integer of (decimal of (new_price / $1.00) * 2.0)
+      20 - integer of ((new_price / $1.00) * 2.0)
     else
       demand
 
   definition new_supply equals
     if (action_price_increases and demand > supply and price < price_ceiling) or
        (action_price_decreases and supply > demand and price > $1.00) then
-      integer of (decimal of (new_price / $1.00) * 2.0)
+      integer of ((new_price / $1.00) * 2.0)
     else
       supply
 
@@ -61,11 +61,11 @@ scope Pattern06MarketConstraints:
     if (action_price_increases and demand > supply and price < price_ceiling) or
        (action_price_decreases and supply > demand and price > $1.00) then
       if new_demand > new_supply then
-        -- Shortage
+        Shortage
       else if new_demand < new_supply then
-        -- Surplus
+        Surplus
       else
-        -- Equilibrium
+        Equilibrium
     else
       market_status
 ```

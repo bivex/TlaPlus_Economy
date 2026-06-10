@@ -7,7 +7,7 @@ This pattern models a multi-stage sales funnel: content creation, traffic genera
 ```catala
 declaration scope Pattern04Funnel:
   # State variables
-  input content content integer
+  input funnel_content content integer
   input cold_traffic content integer
   input warm_audience content integer
   input leads content integer
@@ -33,11 +33,11 @@ declaration scope Pattern04Funnel:
 ```catala
 scope Pattern04Funnel:
   definition new_content equals
-    if action_create_content then content + 1 else content
+    if action_create_content then funnel_content + 1 else funnel_content
 
   definition new_cold_traffic equals
-    if action_get_traffic and content > 0 then
-      cold_traffic + (content * 100)
+    if action_get_traffic and funnel_content > 0 then
+      cold_traffic + (funnel_content * 100)
     else if action_warm_up and cold_traffic >= 10 then
       cold_traffic - 10
     else

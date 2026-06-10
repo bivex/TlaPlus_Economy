@@ -34,48 +34,48 @@ declaration scope Pattern14Oligopoly:
 ```catala
 scope Pattern14Oligopoly:
   definition new_actionA equals
-    match actionA with
+    match actionA with pattern
       -- Wait: action_firmA_chooses
       -- Cooperate: actionA
       -- Defect: actionA
 
   definition new_actionB equals
-    match actionB with
+    match actionB with pattern
       -- Wait: action_firmB_chooses
       -- Cooperate: actionB
       -- Defect: actionB
 
   definition new_profitA equals
     if action_resolve_game then
-      match new_actionA with
+      match new_actionA with pattern
         -- Wait: $0.00
         -- Cooperate:
-          match new_actionB with
+          (match new_actionB with pattern
             -- Wait: $0.00
             -- Cooperate: $50.00
-            -- Defect: $0.00
+            -- Defect: $0.00)
         -- Defect:
-          match new_actionB with
+          (match new_actionB with pattern
             -- Wait: $0.00
             -- Cooperate: $100.00
-            -- Defect: $10.00
+            -- Defect: $10.00)
     else
       profitA
 
   definition new_profitB equals
     if action_resolve_game then
-      match new_actionB with
+      match new_actionB with pattern
         -- Wait: $0.00
         -- Cooperate:
-          match new_actionA with
+          (match new_actionA with pattern
             -- Wait: $0.00
             -- Cooperate: $50.00
-            -- Defect: $0.00
+            -- Defect: $0.00)
         -- Defect:
-          match new_actionA with
+          (match new_actionA with pattern
             -- Wait: $0.00
             -- Cooperate: $100.00
-            -- Defect: $10.00
+            -- Defect: $10.00)
     else
       profitB
 ```

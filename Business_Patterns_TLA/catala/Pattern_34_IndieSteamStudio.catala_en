@@ -96,11 +96,11 @@ scope Pattern34IndieSteamStudio:
       cash - premium_dev_cost + rev
     else if action_tail_month and months_passed < months_available then
       let tail_units equals
-        ((micro_games * micro_sales) / 12) +
-        ((quality_games * quality_sales) / 12) +
-        ((premium_games * premium_sales) / 12)
+        (decimal of (micro_games * micro_sales) / 12.0) +
+        (decimal of (quality_games * quality_sales) / 12.0) +
+        (decimal of (premium_games * premium_sales) / 12.0)
       in
-      let tail_rev equals ($5.00 * decimal of tail_units) * (1.0 - steam_cut) in
+      let tail_rev equals ($5.00 * tail_units) * (1.0 - steam_cut) in
       cash + tail_rev
     else
       cash
@@ -117,11 +117,11 @@ scope Pattern34IndieSteamStudio:
       total_revenue + rev
     else if action_tail_month and months_passed < months_available then
       let tail_units equals
-        ((micro_games * micro_sales) / 12) +
-        ((quality_games * quality_sales) / 12) +
-        ((premium_games * premium_sales) / 12)
+        (decimal of (micro_games * micro_sales) / 12.0) +
+        (decimal of (quality_games * quality_sales) / 12.0) +
+        (decimal of (premium_games * premium_sales) / 12.0)
       in
-      let tail_rev equals ($5.00 * decimal of tail_units) * (1.0 - steam_cut) in
+      let tail_rev equals ($5.00 * tail_units) * (1.0 - steam_cut) in
       total_revenue + tail_rev
     else
       total_revenue

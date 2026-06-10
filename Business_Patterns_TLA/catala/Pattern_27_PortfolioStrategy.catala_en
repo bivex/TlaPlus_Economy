@@ -57,7 +57,7 @@ scope Pattern27PortfolioStrategy:
 
   definition new_leads equals
     if action_do_marketing and time_pool >= 1 then
-      let efficiency equals 1 + (portfolio_items / 2) in
+      let efficiency equals 1 + integer of (decimal of portfolio_items / 2.0) in
       leads + efficiency
     else if action_close_and_execute and leads > 0 and time_pool >= build_time_client and
             (portfolio_items >= 3 or leads_modulo_two_is_zero) then

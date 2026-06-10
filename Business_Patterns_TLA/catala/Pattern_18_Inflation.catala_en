@@ -11,7 +11,7 @@ declaration scope Pattern18Inflation:
   input nominal_growth content decimal
 
   # State variables
-  input year content integer
+  input current_year content integer
   input nominal_revenue content money
   input real_revenue content money
   input cpi content decimal
@@ -31,22 +31,22 @@ declaration scope Pattern18Inflation:
 ```catala
 scope Pattern18Inflation:
   definition new_year equals
-    if action_next_year and year < 10 then year + 1 else year
+    if action_next_year and current_year < 10 then current_year + 1 else current_year
 
   definition new_cpi equals
-    if action_next_year and year < 10 then
+    if action_next_year and current_year < 10 then
       cpi * (1.0 + inflation_rate)
     else
       cpi
 
   definition new_nominal_revenue equals
-    if action_next_year and year < 10 then
+    if action_next_year and current_year < 10 then
       nominal_revenue * (1.0 + nominal_growth)
     else
       nominal_revenue
 
   definition new_real_revenue equals
-    if action_next_year and year < 10 then
+    if action_next_year and current_year < 10 then
       # real_revenue = (nominal_revenue * 100) / cpi
       # Here cpi starts at 1.0 (equivalent to 100 in base year)
       nominal_revenue / new_cpi

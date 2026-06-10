@@ -10,7 +10,7 @@ declaration scope Pattern19EconomicGrowth:
   input savings_rate content decimal
 
   # State variables
-  input year content integer
+  input current_year content integer
   input capital content money
   input production content money
   input total_dividends content money
@@ -30,16 +30,16 @@ declaration scope Pattern19EconomicGrowth:
 ```catala
 scope Pattern19EconomicGrowth:
   definition new_year equals
-    if action_business_cycle and year < 20 then year + 1 else year
+    if action_business_cycle and current_year < 20 then current_year + 1 else current_year
 
   definition new_production equals
-    if action_business_cycle and year < 20 then
+    if action_business_cycle and current_year < 20 then
       capital * 1.20
     else
       production
 
   definition new_capital equals
-    if action_business_cycle and year < 20 then
+    if action_business_cycle and current_year < 20 then
       let investment equals new_production * savings_rate in
       if capital + investment >= $10.00 then
         capital + investment - $10.00
@@ -49,7 +49,7 @@ scope Pattern19EconomicGrowth:
       capital
 
   definition new_total_dividends equals
-    if action_business_cycle and year < 20 then
+    if action_business_cycle and current_year < 20 then
       let investment equals new_production * savings_rate in
       let dividends equals new_production - investment in
       total_dividends + dividends
