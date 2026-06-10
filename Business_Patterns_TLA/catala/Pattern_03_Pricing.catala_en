@@ -1,0 +1,60 @@
+# Pattern 03: Dynamic Pricing
+
+This pattern models dynamic pricing based on supply and demand, where prices are raised during shortages and lowered (discounts) during surplus, driving sales.
+
+## Scope Declaration
+
+```catala
+declaration scope Pattern03Pricing:
+  # State variables
+  input price content money
+  input stock content integer
+  input demand content integer
+  input revenue content money
+
+  # Action choices
+  input action_increase_price content boolean
+  input action_decrease_price content boolean
+  input action_make_sale content boolean
+
+  # Updated state variables
+  output new_price content money
+  output new_stock content integer
+  output new_demand content integer
+  output new_revenue content money
+```
+
+## Rules and Definitions
+
+```catala
+scope Pattern03Pricing:
+  definition new_price equals
+    if action_increase_price and demand > stock then
+      price + $10.00
+    else if action_decrease_price and stock > demand and price > $10.00 then
+      price - $10.00
+    else
+      price
+
+  definition new_demand equals
+    if action_increase_price and demand > stock then
+      if demand >= 5 then demand - 5 else 0
+    else if action_decrease_price and stock > demand then
+      demand + 5
+    else if action_make_sale and demand > 0 and stock > 0 then
+      demand - 1
+    else
+      demand
+
+  definition new_stock equals
+    if action_make_sale and demand > 0 and stock > 0 then
+      stock - 1
+    else
+      stock
+
+  definition new_revenue equals
+    if action_make_sale and demand > 0 and stock > 0 then
+      revenue + price
+    else
+      revenue
+```

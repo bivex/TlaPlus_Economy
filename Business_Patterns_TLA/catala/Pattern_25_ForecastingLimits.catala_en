@@ -1,0 +1,47 @@
+# Pattern 25: Forecasting Limits
+
+This pattern models the limits of forecasting using Bertrand Russell's Turkey Paradox (Black Swan). It shows how confidence rises to its highest point right before a catastrophic collapse.
+
+## Scope Declaration
+
+```catala
+declaration scope Pattern25ForecastingLimits:
+  # State variables
+  input day content integer
+  input confidence_level content integer
+  input alive content boolean
+
+  # Action choices
+  input action_normal_day content boolean
+  input action_black_swan content boolean
+
+  # Updated state variables
+  output new_day content integer
+  output new_confidence_level content integer
+  output new_alive content boolean
+```
+
+## Rules and Definitions
+
+```catala
+scope Pattern25ForecastingLimits:
+  definition new_alive equals
+    if action_black_swan and day = 100 and alive then
+      false
+    else
+      alive
+
+  definition new_day equals
+    if action_normal_day and alive and day < 100 then
+      day + 1
+    else
+      day
+
+  definition new_confidence_level equals
+    if action_normal_day and alive and day < 100 then
+      confidence_level + 1
+    else if action_black_swan and day = 100 and alive then
+      0
+    else
+      confidence_level
+```

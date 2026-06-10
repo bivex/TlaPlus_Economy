@@ -1,0 +1,50 @@
+# Pattern 22: Phillips Curve
+
+This pattern models the Phillips Curve, illustrating the short-term trade-off between inflation and unemployment, and how in the long run expectations adjust, bringing unemployment back to its natural rate at a higher inflation rate.
+
+## Scope Declaration
+
+```catala
+declaration scope Pattern22PhillipsCurve:
+  # Constants
+  input natural_unemployment content decimal
+
+  # State variables
+  input unemployment content decimal
+  input actual_inflation content decimal
+  input expected_inflation content decimal
+
+  # Action choices
+  input action_stimulate_economy content boolean
+  input action_expectations_adjust content boolean
+
+  # Updated state variables
+  output new_unemployment content decimal
+  output new_actual_inflation content decimal
+  output new_expected_inflation content decimal
+```
+
+## Rules and Definitions
+
+```catala
+scope Pattern22PhillipsCurve:
+  definition new_actual_inflation equals
+    if action_stimulate_economy and actual_inflation < 15.0% then
+      actual_inflation + 5.0%
+    else
+      actual_inflation
+
+  definition new_expected_inflation equals
+    if action_expectations_adjust and expected_inflation < actual_inflation then
+      actual_inflation
+    else
+      expected_inflation
+
+  definition new_unemployment equals
+    if action_stimulate_economy and actual_inflation < 15.0% then
+      natural_unemployment - (new_actual_inflation - expected_inflation)
+    else if action_expectations_adjust and expected_inflation < actual_inflation then
+      natural_unemployment - (actual_inflation - new_expected_inflation)
+    else
+      unemployment
+```

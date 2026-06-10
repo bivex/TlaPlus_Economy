@@ -1,0 +1,55 @@
+# Pattern 01: Opportunity Cost and ROI
+
+This pattern models resource allocation decisions under budget constraints, choosing between product development (features) and marketing to maximize revenue.
+
+## Scope Declaration
+
+```catala
+declaration scope Pattern01ROI:
+  # State variables
+  input budget content money
+  input features content integer
+  input marketing content integer
+  input revenue content money
+
+  # Action choices
+  input action_invest_in_product content boolean
+  input action_invest_in_marketing content boolean
+
+  # Updated state variables
+  output new_budget content money
+  output new_features content integer
+  output new_marketing content integer
+  output new_revenue content money
+```
+
+## Rules and Definitions
+
+```catala
+scope Pattern01ROI:
+  definition new_budget equals
+    if action_invest_in_product then
+      if budget >= $10.00 then budget - $10.00 else budget
+    else if action_invest_in_marketing then
+      if budget >= $5.00 and features > 0 then budget - $5.00 else budget
+    else
+      budget
+
+  definition new_features equals
+    if action_invest_in_product and budget >= $10.00 then
+      features + 1
+    else
+      features
+
+  definition new_marketing equals
+    if action_invest_in_marketing and budget >= $5.00 and features > 0 then
+      marketing + 1
+    else
+      marketing
+
+  definition new_revenue equals
+    if action_invest_in_marketing and budget >= $5.00 and features > 0 then
+      revenue + (decimal of features * $5.00)
+    else
+      revenue
+```

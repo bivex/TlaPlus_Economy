@@ -1,0 +1,52 @@
+# Pattern 13: Monopolistic Competition
+
+This pattern models monopolistic competition, where positive short-term profits attract competitors, increasing average costs and eroding long-term profits to zero.
+
+## Scope Declaration
+
+```catala
+declaration scope Pattern13MonopolisticCompetition:
+  # State variables
+  input firms content integer
+  input price content money
+  input average_cost content money
+  input profit content money
+
+  # Action choices
+  input action_competitor_enters content boolean
+
+  # Updated state variables
+  output new_firms content integer
+  output new_price content money
+  output new_average_cost content money
+  output new_profit content money
+```
+
+## Rules and Definitions
+
+```catala
+scope Pattern13MonopolisticCompetition:
+  definition new_firms equals
+    if action_competitor_enters and profit > $0.00 then
+      firms + 1
+    else
+      firms
+
+  definition new_price equals
+    if action_competitor_enters and profit > $0.00 then
+      price - $10.00
+    else
+      price
+
+  definition new_average_cost equals
+    if action_competitor_enters and profit > $0.00 then
+      average_cost + $5.00
+    else
+      average_cost
+
+  definition new_profit equals
+    if action_competitor_enters and profit > $0.00 then
+      (price - $10.00) - (average_cost + $5.00)
+    else
+      profit
+```

@@ -1,0 +1,77 @@
+# Pattern 33: Passive Income Levers
+
+This pattern models and compares passive income models (Marketplace Add-on, Programmatic SEO, and Boring Micro-SaaS) based on monthly support time, revenue, scaling potential, and platform risk.
+
+## Scope Declaration
+
+```catala
+declaration scope Pattern33PassiveLevers:
+  # State variables
+  input maintenance_pool content integer
+  input revenue content money
+  input growth_potential content decimal
+  input platform_risk content decimal
+
+  # Action choices
+  input action_build_marketplace_addon content boolean
+  input action_build_programmatic_seo content boolean
+  input action_build_boring_saas content boolean
+
+  # Updated state variables
+  output new_maintenance_pool content integer
+  output new_revenue content money
+  output new_growth_potential content decimal
+  output new_platform_risk content decimal
+  output passive_ratio content money
+```
+
+## Rules and Definitions
+
+```catala
+scope Pattern33PassiveLevers:
+  definition new_revenue equals
+    if action_build_marketplace_addon then
+      $5,000.00
+    else if action_build_programmatic_seo then
+      $3,000.00
+    else if action_build_boring_saas then
+      $8,000.00
+    else
+      revenue
+
+  definition new_maintenance_pool equals
+    if action_build_marketplace_addon then
+      5
+    else if action_build_programmatic_seo then
+      1
+    else if action_build_boring_saas then
+      15
+    else
+      maintenance_pool
+
+  definition new_platform_risk equals
+    if action_build_marketplace_addon then
+      70.0%
+    else if action_build_programmatic_seo then
+      40.0%
+    else if action_build_boring_saas then
+      10.0%
+    else
+      platform_risk
+
+  definition new_growth_potential equals
+    if action_build_marketplace_addon then
+      80.0%
+    else if action_build_programmatic_seo then
+      100.0%
+    else if action_build_boring_saas then
+      50.0%
+    else
+      growth_potential
+
+  definition passive_ratio equals
+    if new_maintenance_pool = 0 then
+      $0.00
+    else
+      new_revenue / decimal of new_maintenance_pool
+```

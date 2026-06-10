@@ -1,0 +1,54 @@
+# Pattern 17: Macro GDP
+
+This pattern models GDP components based on the Keynesian macroeconomic identity (GDP = Consumption + Investment + Government Spending + Net Exports) and shows how government stimulus compensates for export shocks.
+
+## Scope Declaration
+
+```catala
+declaration scope Pattern17MacroGDP:
+  # State variables
+  input consumption content money
+  input investment content money
+  input gov_spending content money
+  input net_exports content money
+  input gdp content money
+
+  # Action choices
+  input action_gov_stimulus content boolean
+  input action_export_shock content boolean
+  input action_update_gdp content boolean
+
+  # Updated state variables
+  output new_consumption content money
+  output new_investment content money
+  output new_gov_spending content money
+  output new_net_exports content money
+  output new_gdp content money
+```
+
+## Rules and Definitions
+
+```catala
+scope Pattern17MacroGDP:
+  definition new_consumption equals consumption
+
+  definition new_investment equals investment
+
+  definition new_gov_spending equals
+    if action_gov_stimulus and gov_spending < $50.00 then
+      gov_spending + $10.00
+    else
+      gov_spending
+
+  definition new_net_exports equals
+    if action_export_shock and net_exports > -$20.00 then
+      net_exports - $10.00
+    else
+      net_exports
+
+  definition new_gdp equals
+    if action_update_gdp then
+      new_consumption + new_investment + new_gov_spending + new_net_exports
+    else
+      gdp
+```

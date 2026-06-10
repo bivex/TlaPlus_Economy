@@ -1,0 +1,61 @@
+# Pattern 21: Macro Shocks
+
+This pattern models the AD-AS model for business cycles, showing how demand shocks lead to recessions and how price expectations eventually adjust to self-correct the economy back to full employment.
+
+## Declarations
+
+```catala
+declaration enumeration EconomicStage:
+  -- Equilibrium
+  -- Recession
+  -- Recovered
+
+declaration scope Pattern21MacroShocks:
+  # Constants
+  input natural_gdp content money
+
+  # State variables
+  input gdp content money
+  input price_level content decimal
+  input expected_price_level content decimal
+  input stage content EconomicStage
+
+  # Action choices
+  input action_demand_shock content boolean
+  input action_self_correction content boolean
+
+  # Updated state variables
+  output new_gdp content money
+  output new_price_level content decimal
+  output new_expected_price_level content decimal
+  output new_stage content EconomicStage
+```
+
+## Rules and Definitions
+
+```catala
+scope Pattern21MacroShocks:
+  definition new_stage equals
+    match stage with
+      -- Equilibrium: if action_demand_shock then -- Recession else -- Equilibrium
+      -- Recession: if action_self_correction then -- Recovered else -- Recession
+      -- Recovered: stage
+
+  definition new_gdp equals
+    match stage with
+      -- Equilibrium: if action_demand_shock then gdp - $20.00 else gdp
+      -- Recession: if action_self_correction then natural_gdp else gdp
+      -- Recovered: gdp
+
+  definition new_price_level equals
+    match stage with
+      -- Equilibrium: if action_demand_shock then price_level - 10.0% else price_level
+      -- Recession: if action_self_correction then price_level - 10.0% else price_level
+      -- Recovered: price_level
+
+  definition new_expected_price_level equals
+    match stage with
+      -- Equilibrium: expected_price_level
+      -- Recession: if action_self_correction then price_level else expected_price_level
+      -- Recovered: expected_price_level
+```

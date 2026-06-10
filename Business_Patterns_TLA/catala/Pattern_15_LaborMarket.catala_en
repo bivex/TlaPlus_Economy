@@ -1,0 +1,55 @@
+# Pattern 15: Labor Market
+
+This pattern models labor hiring decisions, showing how a firm hires additional workers only as long as the Value of Marginal Product of Labor (VMPL) exceeds the wage.
+
+## Scope Declaration
+
+```catala
+declaration scope Pattern15LaborMarket:
+  # Constants
+  input price content money
+  input wage content money
+
+  # State variables
+  input workers content integer
+  input production content integer
+  input profit content money
+
+  # Action choices
+  input action_hire_worker content boolean
+
+  # Updated state variables
+  output new_workers content integer
+  output new_production content integer
+  output new_profit content money
+```
+
+## Rules and Definitions
+
+```catala
+scope Pattern15LaborMarket:
+  # VMPL rule: vmpl = price * (11 - next_worker)
+  # next_worker = workers + 1
+  # Condition: vmpl > wage
+
+  definition new_workers equals
+    if action_hire_worker and workers < 10 then
+      let next_worker equals workers + 1 in
+      let mpl equals 11 - next_worker in
+      let vmpl equals decimal of mpl * price in
+      if vmpl > wage then next_worker else workers
+    else
+      workers
+
+  definition new_production equals
+    if action_hire_worker and new_workers > workers then
+      production + (11 - new_workers)
+    else
+      production
+
+  definition new_profit equals
+    if action_hire_worker and new_workers > workers then
+      (decimal of new_production * price) - (decimal of new_workers * wage)
+    else
+      profit
+```

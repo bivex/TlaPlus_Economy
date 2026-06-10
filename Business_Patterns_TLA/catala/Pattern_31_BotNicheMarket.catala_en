@@ -1,0 +1,83 @@
+# Pattern 31: Bot Niche Market
+
+This pattern compares three chatbot/mini-app niches (subscription parsers, high-ticket bespoke B2B TMA, and premium AI LLM Oracles) over a 3-month horizon to evaluate the fastest path to profitability.
+
+## Scope Declaration
+
+```catala
+declaration scope Pattern31BotNicheMarket:
+  # Constants
+  input parser_build_time content integer
+  input parser_monthly_pay content money
+  input tma_build_time content integer
+  input tma_project_price content money
+  input ai_build_time content integer
+  input ai_monthly_pay content money
+
+  # State variables
+  input time_spent content integer
+  input niche_parsers content integer
+  input b2b_mini_apps content integer
+  input ai_oracles content integer
+  input accumulated_profit content money
+
+  # Action choices
+  input action_build_parser content boolean
+  input action_build_tma content boolean
+  input action_build_ai content boolean
+  input action_monthly_cycle content boolean
+
+  # Updated state variables
+  output new_time_spent content integer
+  output new_niche_parsers content integer
+  output new_b2b_mini_apps content integer
+  output new_ai_oracles content integer
+  output new_accumulated_profit content money
+```
+
+## Rules and Definitions
+
+```catala
+scope Pattern31BotNicheMarket:
+  definition new_time_spent equals
+    if action_build_parser and time_spent < 480 then
+      time_spent + parser_build_time
+    else if action_build_tma and time_spent < 480 then
+      time_spent + tma_build_time
+    else if action_build_ai and time_spent < 480 then
+      time_spent + ai_build_time
+    else
+      time_spent
+
+  definition new_niche_parsers equals
+    if action_build_parser and time_spent < 480 then
+      niche_parsers + 1
+    else
+      niche_parsers
+
+  definition new_b2b_mini_apps equals
+    if action_build_tma and time_spent < 480 then
+      b2b_mini_apps + 1
+    else
+      b2b_mini_apps
+
+  definition new_ai_oracles equals
+    if action_build_ai and time_spent < 480 then
+      ai_oracles + 1
+    else
+      ai_oracles
+
+  definition new_accumulated_profit equals
+    if action_build_parser and time_spent < 480 then
+      accumulated_profit + parser_monthly_pay
+    else if action_build_tma and time_spent < 480 then
+      accumulated_profit + tma_project_price
+    else if action_build_ai and time_spent < 480 then
+      accumulated_profit + ai_monthly_pay
+    else if action_monthly_cycle and time_spent < 480 then
+      accumulated_profit 
+      + (decimal of niche_parsers * parser_monthly_pay) 
+      + (decimal of ai_oracles * ai_monthly_pay)
+    else
+      accumulated_profit
+```

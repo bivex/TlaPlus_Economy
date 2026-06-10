@@ -1,0 +1,129 @@
+# Pattern 29: Unified Strategy
+
+This pattern models a comprehensive freelance IT strategy, integrating price discrimination (product ladder), signaling (portfolio size), screening (filtering bad leads), referral loops, and AI-assisted execution efficiency.
+
+## Scope Declaration
+
+```catala
+declaration scope Pattern29UnifiedStrategy:
+  # Constants
+  input entry_price content money
+  input main_price content money
+  input anchor_price content money
+  input production_time_ai content integer
+
+  # State variables
+  input time_pool content integer
+  input budget content money
+  input portfolio_size content integer
+  input leads_low content integer
+  input leads_main content integer
+  input leads_high content integer
+  input reputation content integer
+  input total_profit content money
+
+  # Action choices
+  input action_build_signal content boolean
+  input action_generate_leads content boolean
+  input action_screen_leads content boolean
+  input action_sell_entry content boolean
+  input action_sell_main content boolean
+  input action_sell_anchor content boolean
+
+  # Updated state variables
+  output new_time_pool content integer
+  output new_budget content money
+  output new_portfolio_size content integer
+  output new_leads_low content integer
+  output new_leads_main content integer
+  output new_leads_high content integer
+  output new_reputation content integer
+  output new_total_profit content money
+```
+
+## Rules and Definitions
+
+```catala
+scope Pattern29UnifiedStrategy:
+  definition new_portfolio_size equals
+    if action_build_signal and portfolio_size < 6 and time_pool >= 10 then
+      portfolio_size + 1
+    else
+      portfolio_size
+
+  definition new_time_pool equals
+    if action_build_signal and portfolio_size < 6 and time_pool >= 10 then
+      time_pool - 10
+    else if action_generate_leads and portfolio_size >= 3 and time_pool >= 5 then
+      time_pool - 5
+    else if action_screen_leads and (leads_low + leads_main + leads_high) > 5 and time_pool >= 1 then
+      time_pool - 1
+    else if action_sell_entry and leads_low > 0 and time_pool >= 2 then
+      time_pool - 2
+    else if action_sell_main and leads_main > 0 and time_pool >= production_time_ai then
+      time_pool - production_time_ai
+    else if action_sell_anchor and leads_high > 0 and time_pool >= 20 and reputation >= 30 then
+      time_pool - 20
+    else
+      time_pool
+
+  definition new_reputation equals
+    if action_build_signal and portfolio_size < 6 and time_pool >= 10 then
+      reputation + 10
+    else if action_sell_entry and leads_low > 0 and time_pool >= 2 then
+      reputation + 1
+    else if action_sell_main and leads_main > 0 and time_pool >= production_time_ai then
+      reputation + 5
+    else if action_sell_anchor and leads_high > 0 and time_pool >= 20 and reputation >= 30 then
+      reputation + 20
+    else
+      reputation
+
+  definition new_leads_low equals
+    if action_generate_leads and portfolio_size >= 3 and time_pool >= 5 then
+      leads_low + 5
+    else if action_screen_leads and (leads_low + leads_main + leads_high) > 5 and time_pool >= 1 then
+      leads_low / 2
+    else if action_sell_entry and leads_low > 0 and time_pool >= 2 then
+      leads_low - 1
+    else
+      leads_low
+
+  definition new_leads_main equals
+    if action_generate_leads and portfolio_size >= 3 and time_pool >= 5 then
+      leads_main + 3
+    else if action_screen_leads and (leads_low + leads_main + leads_high) > 5 and time_pool >= 1 then
+      leads_main / 2
+    else if action_sell_main and leads_main > 0 and time_pool >= production_time_ai then
+      leads_main - 1
+    else
+      leads_main
+
+  definition new_leads_high equals
+    if action_generate_leads and portfolio_size >= 3 and time_pool >= 5 then
+      leads_high + 1
+    else if action_sell_anchor and leads_high > 0 and time_pool >= 20 and reputation >= 30 then
+      leads_high - 1
+    else
+      leads_high
+
+  definition new_budget equals
+    if action_sell_entry and leads_low > 0 and time_pool >= 2 then
+      budget + entry_price
+    else if action_sell_main and leads_main > 0 and time_pool >= production_time_ai then
+      budget + main_price
+    else if action_sell_anchor and leads_high > 0 and time_pool >= 20 and reputation >= 30 then
+      budget + anchor_price
+    else
+      budget
+
+  definition new_total_profit equals
+    if action_sell_entry and leads_low > 0 and time_pool >= 2 then
+      total_profit + entry_price
+    else if action_sell_main and leads_main > 0 and time_pool >= production_time_ai then
+      total_profit + main_price
+    else if action_sell_anchor and leads_high > 0 and time_pool >= 20 and reputation >= 30 then
+      total_profit + anchor_price
+    else
+      total_profit
+```

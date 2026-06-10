@@ -1,0 +1,60 @@
+# Pattern 09: Externalities and Pigouvian Tax
+
+This pattern models social externalities and the role of Pigouvian taxes (or API limits/penalties) in aligning private profits with public/social welfare.
+
+## Scope Declaration
+
+```catala
+declaration scope Pattern09Externalities:
+  # State variables
+  input production_volume content integer
+  input private_profit content money
+  input social_damage content money
+  input pigouvian_tax content money
+
+  # Action choices
+  input action_produce content boolean
+
+  # Updated state variables
+  output new_production_volume content integer
+  output new_private_profit content money
+  output new_social_damage content money
+  output new_total_social_welfare content money
+```
+
+## Rules and Definitions
+
+```catala
+scope Pattern09Externalities:
+  definition new_production_volume equals
+    if action_produce and production_volume < 10 then
+      if ($50.00 - pigouvian_tax) > $0.00 then
+        production_volume + 1
+      else
+        production_volume
+    else
+      production_volume
+
+  definition new_private_profit equals
+    if action_produce and production_volume < 10 then
+      if ($50.00 - pigouvian_tax) > $0.00 then
+        private_profit + ($50.00 - pigouvian_tax)
+      else
+        private_profit
+    else
+      private_profit
+
+  definition new_social_damage equals
+    if action_produce and production_volume < 10 then
+      if ($50.00 - pigouvian_tax) > $0.00 then
+        social_damage + $20.00
+      else
+        social_damage
+    else
+      social_damage
+
+  definition new_total_social_welfare equals
+    new_private_profit - new_social_damage + (new_pigouvian_tax_revenue)
+    where new_pigouvian_tax_revenue equals
+      decimal of new_production_volume * pigouvian_tax
+```

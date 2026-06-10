@@ -1,0 +1,49 @@
+# Pattern 24: Currency Union
+
+This pattern models joint liability in a currency union (e.g. Eurozone). It shows how fiscal indiscipline of one member increases borrowing costs and debt servicing expenses for other members.
+
+## Scope Declaration
+
+```catala
+declaration scope Pattern24CurrencyUnion:
+  # State variables
+  input debt_A content money
+  input debt_B content money
+  input union_interest_rate content decimal
+  input cost_of_debt_B content money
+
+  # Action choices
+  input action_countryA_borrows content boolean
+
+  # Updated state variables
+  output new_debt_A content money
+  output new_debt_B content money
+  output new_union_interest_rate content decimal
+  output new_cost_of_debt_B content money
+```
+
+## Rules and Definitions
+
+```catala
+scope Pattern24CurrencyUnion:
+  definition new_debt_B equals debt_B
+
+  definition new_debt_A equals
+    if action_countryA_borrows and debt_A < $50.00 then
+      debt_A + $20.00
+    else
+      debt_A
+
+  definition new_union_interest_rate equals
+    if action_countryA_borrows and debt_A < $50.00 then
+      union_interest_rate + 2.0%
+    else
+      union_interest_rate
+
+  definition new_cost_of_debt_B equals
+    if action_countryA_borrows and debt_A < $50.00 then
+      # debt_B * (union_interest_rate + 2%)
+      debt_B * (union_interest_rate + 2.0%)
+    else
+      cost_of_debt_B
+```

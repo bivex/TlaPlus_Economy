@@ -1,0 +1,58 @@
+# Pattern 19: Economic Growth
+
+This pattern models the Solow-Swan economic growth model for a firm, analyzing the balance between dividend payout and capital reinvestment (Savings Rate) to find the golden rule of capital accumulation.
+
+## Scope Declaration
+
+```catala
+declaration scope Pattern19EconomicGrowth:
+  # Constants (savings rate as a decimal/percentage)
+  input savings_rate content decimal
+
+  # State variables
+  input year content integer
+  input capital content money
+  input production content money
+  input total_dividends content money
+
+  # Action choices
+  input action_business_cycle content boolean
+
+  # Updated state variables
+  output new_year content integer
+  output new_capital content money
+  output new_production content money
+  output new_total_dividends content money
+```
+
+## Rules and Definitions
+
+```catala
+scope Pattern19EconomicGrowth:
+  definition new_year equals
+    if action_business_cycle and year < 20 then year + 1 else year
+
+  definition new_production equals
+    if action_business_cycle and year < 20 then
+      capital * 1.20
+    else
+      production
+
+  definition new_capital equals
+    if action_business_cycle and year < 20 then
+      let investment equals new_production * savings_rate in
+      if capital + investment >= $10.00 then
+        capital + investment - $10.00
+      else
+        $0.00
+    else
+      capital
+
+  definition new_total_dividends equals
+    if action_business_cycle and year < 20 then
+      let investment equals new_production * savings_rate in
+      let dividends equals new_production - investment in
+      total_dividends + dividends
+    else
+      total_dividends
+```

@@ -1,0 +1,128 @@
+# Pattern 34: Indie Steam Studio
+
+This pattern models indie game studio economics on Steam, comparing Micro Games, Quality Indies, and Premium Indies, including long-tail monthly passive income after launch.
+
+## Scope Declaration
+
+```catala
+declaration scope Pattern34IndieSteamStudio:
+  # Constants
+  input micro_dev_months content integer
+  input micro_dev_cost content money
+  input micro_price content money
+  input micro_sales content integer
+
+  input quality_dev_months content integer
+  input quality_dev_cost content money
+  input quality_price content money
+  input quality_sales content integer
+
+  input premium_dev_months content integer
+  input premium_dev_cost content money
+  input premium_price content money
+  input premium_sales content integer
+
+  input steam_cut content decimal
+  input months_available content integer
+
+  # State variables
+  input months_passed content integer
+  input cash content money
+  input micro_games content integer
+  input quality_games content integer
+  input premium_games content integer
+  input total_revenue content money
+
+  # Action choices
+  input action_make_micro content boolean
+  input action_make_quality content boolean
+  input action_make_premium content boolean
+  input action_tail_month content boolean
+
+  # Updated state variables
+  output new_months_passed content integer
+  output new_cash content money
+  output new_micro_games content integer
+  output new_quality_games content integer
+  output new_premium_games content integer
+  output new_total_revenue content money
+```
+
+## Rules and Definitions
+
+```catala
+scope Pattern34IndieSteamStudio:
+  definition new_months_passed equals
+    if action_make_micro and months_passed + micro_dev_months <= months_available then
+      months_passed + micro_dev_months
+    else if action_make_quality and months_passed + quality_dev_months <= months_available then
+      months_passed + quality_dev_months
+    else if action_make_premium and months_passed + premium_dev_months <= months_available then
+      months_passed + premium_dev_months
+    else if action_tail_month and months_passed < months_available then
+      months_passed + 1
+    else
+      months_passed
+
+  definition new_micro_games equals
+    if action_make_micro and months_passed + micro_dev_months <= months_available then
+      micro_games + 1
+    else
+      micro_games
+
+  definition new_quality_games equals
+    if action_make_quality and months_passed + quality_dev_months <= months_available then
+      quality_games + 1
+    else
+      quality_games
+
+  definition new_premium_games equals
+    if action_make_premium and months_passed + premium_dev_months <= months_available then
+      premium_games + 1
+    else
+      premium_games
+
+  # NetRev helper function logic implemented directly inline
+  # NetRev(price, copies) = price * copies * (1 - steam_cut)
+  definition new_cash equals
+    if action_make_micro and months_passed + micro_dev_months <= months_available then
+      let rev equals (micro_price * decimal of micro_sales) * (1.0 - steam_cut) in
+      cash - micro_dev_cost + rev
+    else if action_make_quality and months_passed + quality_dev_months <= months_available then
+      let rev equals (quality_price * decimal of quality_sales) * (1.0 - steam_cut) in
+      cash - quality_dev_cost + rev
+    else if action_make_premium and months_passed + premium_dev_months <= months_available then
+      let rev equals (premium_price * decimal of premium_sales) * (1.0 - steam_cut) in
+      cash - premium_dev_cost + rev
+    else if action_tail_month and months_passed < months_available then
+      let tail_units equals
+        ((micro_games * micro_sales) / 12) +
+        ((quality_games * quality_sales) / 12) +
+        ((premium_games * premium_sales) / 12)
+      in
+      let tail_rev equals ($5.00 * decimal of tail_units) * (1.0 - steam_cut) in
+      cash + tail_rev
+    else
+      cash
+
+  definition new_total_revenue equals
+    if action_make_micro and months_passed + micro_dev_months <= months_available then
+      let rev equals (micro_price * decimal of micro_sales) * (1.0 - steam_cut) in
+      total_revenue + rev
+    else if action_make_quality and months_passed + quality_dev_months <= months_available then
+      let rev equals (quality_price * decimal of quality_sales) * (1.0 - steam_cut) in
+      total_revenue + rev
+    else if action_make_premium and months_passed + premium_dev_months <= months_available then
+      let rev equals (premium_price * decimal of premium_sales) * (1.0 - steam_cut) in
+      total_revenue + rev
+    else if action_tail_month and months_passed < months_available then
+      let tail_units equals
+        ((micro_games * micro_sales) / 12) +
+        ((quality_games * quality_sales) / 12) +
+        ((premium_games * premium_sales) / 12)
+      in
+      let tail_rev equals ($5.00 * decimal of tail_units) * (1.0 - steam_cut) in
+      total_revenue + tail_rev
+    else
+      total_revenue
+```

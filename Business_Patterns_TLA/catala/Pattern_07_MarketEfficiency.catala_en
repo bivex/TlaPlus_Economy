@@ -1,0 +1,51 @@
+# Pattern 07: Market Efficiency
+
+This pattern models transaction gains, showing how total market surplus (consumer + producer surplus) is maximized when transactions occur between willing buyers and sellers.
+
+## Scope Declaration
+
+```catala
+declaration scope Pattern07MarketEfficiency:
+  # State variables
+  input price content money
+  input buyer_wtp content money
+  input seller_cost content money
+  input consumer_surplus content money
+  input producer_surplus content money
+  input deals_done content integer
+
+  # Action choices
+  input action_make_trade content boolean
+
+  # Updated state variables
+  output new_consumer_surplus content money
+  output new_producer_surplus content money
+  output new_deals_done content integer
+  output new_total_surplus content money
+```
+
+## Rules and Definitions
+
+```catala
+scope Pattern07MarketEfficiency:
+  definition new_consumer_surplus equals
+    if action_make_trade and buyer_wtp >= price and price >= seller_cost and deals_done < 10 then
+      consumer_surplus + (buyer_wtp - price)
+    else
+      consumer_surplus
+
+  definition new_producer_surplus equals
+    if action_make_trade and buyer_wtp >= price and price >= seller_cost and deals_done < 10 then
+      producer_surplus + (price - seller_cost)
+    else
+      producer_surplus
+
+  definition new_deals_done equals
+    if action_make_trade and buyer_wtp >= price and price >= seller_cost and deals_done < 10 then
+      deals_done + 1
+    else
+      deals_done
+
+  definition new_total_surplus equals
+    new_consumer_surplus + new_producer_surplus
+```

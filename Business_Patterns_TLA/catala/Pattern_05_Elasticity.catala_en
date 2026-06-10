@@ -1,0 +1,61 @@
+# Pattern 05: Elasticity and Revenue
+
+This pattern models price elasticity of demand, contrasting revenue changes for elastic vs. inelastic products when prices change.
+
+## Scope Declaration
+
+```catala
+declaration scope Pattern05Elasticity:
+  # State variables
+  input price content money
+  input demand_inelastic content integer
+  input revenue_inelastic content money
+  input demand_elastic content integer
+  input revenue_elastic content money
+
+  # Action choices
+  input action_increase_price content boolean
+  input action_decrease_price content boolean
+
+  # Updated state variables
+  output new_price content money
+  output new_demand_inelastic content integer
+  output new_revenue_inelastic content money
+  output new_demand_elastic content integer
+  output new_revenue_elastic content money
+```
+
+## Rules and Definitions
+
+```catala
+scope Pattern05Elasticity:
+  definition new_price equals
+    if action_increase_price then
+      price + $10.00
+    else if action_decrease_price and price > $10.00 then
+      price - $10.00
+    else
+      price
+
+  definition new_demand_inelastic equals
+    if action_increase_price then
+      if demand_inelastic >= 1 then demand_inelastic - 1 else 0
+    else if action_decrease_price and price > $10.00 then
+      demand_inelastic + 1
+    else
+      demand_inelastic
+
+  definition new_demand_elastic equals
+    if action_increase_price then
+      if demand_elastic >= 5 then demand_elastic - 5 else 0
+    else if action_decrease_price and price > $10.00 then
+      demand_elastic + 5
+    else
+      demand_elastic
+
+  definition new_revenue_inelastic equals
+    decimal of new_demand_inelastic * new_price
+
+  definition new_revenue_elastic equals
+    decimal of new_demand_elastic * new_price
+```

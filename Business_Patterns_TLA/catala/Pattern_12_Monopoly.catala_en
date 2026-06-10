@@ -1,0 +1,33 @@
+# Pattern 12: Monopoly
+
+This pattern models a monopolist pricing model. The monopolist is a "price maker" and chooses price to maximize profit on a given demand curve (Q = 100 - P).
+
+## Scope Declaration
+
+```catala
+declaration scope Pattern12Monopoly:
+  # Constants
+  input marginal_cost content money
+
+  # Action choice (Monopolist chooses price)
+  input selected_price content money
+
+  # Updated state variables
+  output price content money
+  output quantity content integer
+  output profit content money
+```
+
+## Rules and Definitions
+
+```catala
+scope Pattern12Monopoly:
+  definition price equals selected_price
+
+  definition quantity equals
+    # Q = 100 - P
+    integer of (decimal of ($100.00 - price) / decimal of $1.00)
+
+  definition profit equals
+    (price - marginal_cost) * decimal of quantity
+```

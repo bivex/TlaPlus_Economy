@@ -1,0 +1,56 @@
+# Pattern 02: Outsourcing and Advantage
+
+This pattern models delegation and comparative advantage, demonstrating why the CEO should delegate server configuration to a junior developer to focus on sales, even if the CEO is faster at configuring servers.
+
+## Scope Declaration
+
+```catala
+declaration scope Pattern02Outsourcing:
+  # State variables
+  input ceo_hours content integer
+  input jun_hours content integer
+  input sales_closed content integer
+  input servers_configured content integer
+
+  # Action choices
+  input action_ceo_configures_server content boolean
+  input action_ceo_sells content boolean
+  input action_jun_configures_server content boolean
+
+  # Updated state variables
+  output new_ceo_hours content integer
+  output new_jun_hours content integer
+  output new_sales_closed content integer
+  output new_servers_configured content integer
+```
+
+## Rules and Definitions
+
+```catala
+scope Pattern02Outsourcing:
+  definition new_ceo_hours equals
+    if action_ceo_configures_server or action_ceo_sells then
+      if ceo_hours > 0 then ceo_hours - 1 else ceo_hours
+    else
+      ceo_hours
+
+  definition new_jun_hours equals
+    if action_jun_configures_server then
+      if jun_hours >= 3 then jun_hours - 3 else jun_hours
+    else
+      jun_hours
+
+  definition new_sales_closed equals
+    if action_ceo_sells and ceo_hours > 0 then
+      sales_closed + 1
+    else
+      sales_closed
+
+  definition new_servers_configured equals
+    if action_ceo_configures_server and ceo_hours > 0 then
+      servers_configured + 1
+    else if action_jun_configures_server and jun_hours >= 3 then
+      servers_configured + 1
+    else
+      servers_configured
+```

@@ -1,0 +1,74 @@
+# Pattern 30: Advanced Business
+
+This pattern models the scaling choices for a bot/mini-app business: scaling a mass-market product (e.g. Air Trackbot) with passive advertising/affiliate revenue vs. executing high-ticket bespoke freelance bot/parsing services.
+
+## Scope Declaration
+
+```catala
+declaration scope Pattern30AdvancedBusiness:
+  # Constants
+  input arpu_passive content money
+  input service_ticket content money
+  input service_time content integer
+  input scaling_time content integer
+  input scaling_factor content integer
+
+  # State variables
+  input time_pool content integer
+  input own_user_base content integer
+  input passive_revenue content money
+  input service_revenue content money
+  input active_own_bots content integer
+
+  # Action choices
+  input action_build_own_bot content boolean
+  input action_marketing_own_bot content boolean
+  input action_generate_passive_income content boolean
+  input action_do_freelance_task content boolean
+
+  # Updated state variables
+  output new_time_pool content integer
+  output new_own_user_base content integer
+  output new_passive_revenue content money
+  output new_service_revenue content money
+  output new_active_own_bots content integer
+```
+
+## Rules and Definitions
+
+```catala
+scope Pattern30AdvancedBusiness:
+  definition new_active_own_bots equals
+    if action_build_own_bot and active_own_bots = 0 and time_pool >= 40 then
+      1
+    else
+      active_own_bots
+
+  definition new_time_pool equals
+    if action_build_own_bot and active_own_bots = 0 and time_pool >= 40 then
+      time_pool - 40
+    else if action_marketing_own_bot and active_own_bots > 0 and time_pool >= scaling_time then
+      time_pool - scaling_time
+    else if action_do_freelance_task and time_pool >= service_time then
+      time_pool - service_time
+    else
+      time_pool
+
+  definition new_own_user_base equals
+    if action_marketing_own_bot and active_own_bots > 0 and time_pool >= scaling_time then
+      own_user_base + scaling_factor
+    else
+      own_user_base
+
+  definition new_passive_revenue equals
+    if action_generate_passive_income and own_user_base > 0 then
+      passive_revenue + (decimal of own_user_base * arpu_passive)
+    else
+      passive_revenue
+
+  definition new_service_revenue equals
+    if action_do_freelance_task and time_pool >= service_time then
+      service_revenue + service_ticket
+    else
+      service_revenue
+```

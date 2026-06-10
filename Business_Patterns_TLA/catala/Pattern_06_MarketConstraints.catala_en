@@ -1,0 +1,71 @@
+# Pattern 06: Market Constraints
+
+This pattern models markets operating under administrative price ceilings (e.g. app store limits), showing how shortages occur when prices cannot rise to clear demand.
+
+## Declarations
+
+```catala
+declaration enumeration MarketStatus:
+  -- Shortage
+  -- Surplus
+  -- Equilibrium
+
+declaration scope Pattern06MarketConstraints:
+  # Constants
+  input price_ceiling content money
+
+  # State variables
+  input price content money
+  input demand content integer
+  input supply content integer
+  input market_status content MarketStatus
+
+  # Action choices
+  input action_price_increases content boolean
+  input action_price_decreases content boolean
+
+  # Updated state variables
+  output new_price content money
+  output new_demand content integer
+  output new_supply content integer
+  output new_market_status content MarketStatus
+```
+
+## Rules and Definitions
+
+```catala
+scope Pattern06MarketConstraints:
+  definition new_price equals
+    if action_price_increases and demand > supply and price < price_ceiling then
+      price + $1.00
+    else if action_price_decreases and supply > demand and price > $1.00 then
+      price - $1.00
+    else
+      price
+
+  definition new_demand equals
+    if (action_price_increases and demand > supply and price < price_ceiling) or
+       (action_price_decreases and supply > demand and price > $1.00) then
+      20 - integer of (decimal of (new_price / $1.00) * 2.0)
+    else
+      demand
+
+  definition new_supply equals
+    if (action_price_increases and demand > supply and price < price_ceiling) or
+       (action_price_decreases and supply > demand and price > $1.00) then
+      integer of (decimal of (new_price / $1.00) * 2.0)
+    else
+      supply
+
+  definition new_market_status equals
+    if (action_price_increases and demand > supply and price < price_ceiling) or
+       (action_price_decreases and supply > demand and price > $1.00) then
+      if new_demand > new_supply then
+        -- Shortage
+      else if new_demand < new_supply then
+        -- Surplus
+      else
+        -- Equilibrium
+    else
+      market_status
+```

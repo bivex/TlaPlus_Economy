@@ -1,0 +1,50 @@
+# Pattern 11: Production Costs
+
+This pattern models diminishing marginal returns, showing how adding more workers increases cost linearly (salaries) but increases product output at a decreasing rate due to coordination overhead.
+
+## Scope Declaration
+
+```catala
+declaration scope Pattern11ProductionCosts:
+  # Constants
+  input fixed_cost content money
+  input salary content money
+
+  # State variables
+  input workers content integer
+  input features content integer
+  input total_cost content money
+
+  # Action choices
+  input action_hire_worker content boolean
+
+  # Updated state variables
+  output new_workers content integer
+  output new_features content integer
+  output new_total_cost content money
+  output average_cost_per_feature content money
+```
+
+## Rules and Definitions
+
+```catala
+scope Pattern11ProductionCosts:
+  definition new_workers equals
+    if action_hire_worker and workers < 10 then workers + 1 else workers
+
+  definition new_total_cost equals
+    if action_hire_worker and workers < 10 then total_cost + salary else total_cost
+
+  definition new_features equals
+    if action_hire_worker and workers < 10 then
+      # features + (11 - workers')
+      features + (11 - new_workers)
+    else
+      features
+
+  definition average_cost_per_feature equals
+    if new_features = 0 then
+      $999,999.00
+    else
+      new_total_cost / decimal of new_features
+```

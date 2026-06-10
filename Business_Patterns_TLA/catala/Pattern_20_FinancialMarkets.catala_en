@@ -1,0 +1,62 @@
+# Pattern 20: Financial Markets
+
+This pattern models interest rate adjustments in financial markets based on savings and investment levels. It demonstrates the crowding-out effect, where government borrowing reduces private investment.
+
+## Scope Declaration
+
+```catala
+declaration scope Pattern20FinancialMarkets:
+  # State variables
+  input interest_rate content decimal
+  input savings content money
+  input investments content money
+  input gov_borrowing content money
+
+  # Action choices
+  input action_gov_borrows content boolean
+  input action_adjust_rate_up content boolean
+  input action_adjust_rate_down content boolean
+
+  # Updated state variables
+  output new_interest_rate content decimal
+  output new_savings content money
+  output new_investments content money
+  output new_gov_borrowing content money
+```
+
+## Rules and Definitions
+
+```catala
+scope Pattern20FinancialMarkets:
+  definition new_gov_borrowing equals
+    if action_gov_borrows and gov_borrowing = $0.00 then
+      $20.00
+    else
+      gov_borrowing
+
+  definition new_savings equals
+    if action_gov_borrows and gov_borrowing = $0.00 then
+      savings - $20.00
+    else if action_adjust_rate_up and investments > savings then
+      savings + $10.00
+    else if action_adjust_rate_down and savings > investments and interest_rate > 1.0% then
+      savings - $10.00
+    else
+      savings
+
+  definition new_investments equals
+    if action_adjust_rate_up and investments > savings then
+      investments - $10.00
+    else if action_adjust_rate_down and savings > investments and interest_rate > 1.0% then
+      investments + $10.00
+    else
+      investments
+
+  definition new_interest_rate equals
+    if action_adjust_rate_up and investments > savings then
+      interest_rate + 1.0%
+    else if action_adjust_rate_down and savings > investments and interest_rate > 1.0% then
+      interest_rate - 1.0%
+    else
+      interest_rate
+```

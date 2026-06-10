@@ -1,0 +1,63 @@
+# Pattern 10: Tragedy of Commons
+
+This pattern models the exploitation of a shared resource (e.g. shared QA or IT infrastructure) by separate teams, showing how uncoordinated demand crashes the system.
+
+## Scope Declaration
+
+```catala
+declaration scope Pattern10Commons:
+  # State variables
+  input shared_capacity content integer
+  input teamA_profit content money
+  input teamB_profit content money
+  input system_crashed content boolean
+
+  # Action choices
+  input action_crash_system content boolean
+  input action_teamA_consumes content boolean
+  input action_teamB_consumes content boolean
+
+  # Updated state variables
+  output new_shared_capacity content integer
+  output new_teamA_profit content money
+  output new_teamB_profit content money
+  output new_system_crashed content boolean
+```
+
+## Rules and Definitions
+
+```catala
+scope Pattern10Commons:
+  definition new_system_crashed equals
+    if action_crash_system and shared_capacity = 0 and not system_crashed then
+      true
+    else
+      system_crashed
+
+  definition new_shared_capacity equals
+    if not system_crashed then
+      if action_teamA_consumes and shared_capacity > 0 then
+        shared_capacity - 1
+      else if action_teamB_consumes and shared_capacity > 0 then
+        shared_capacity - 1
+      else
+        shared_capacity
+    else
+      shared_capacity
+
+  definition new_teamA_profit equals
+    if action_crash_system and shared_capacity = 0 and not system_crashed then
+      $0.00
+    else if action_teamA_consumes and shared_capacity > 0 and not system_crashed then
+      teamA_profit + $10.00
+    else
+      teamA_profit
+
+  definition new_teamB_profit equals
+    if action_crash_system and shared_capacity = 0 and not system_crashed then
+      $0.00
+    else if action_teamB_consumes and shared_capacity > 0 and not system_crashed then
+      teamB_profit + $10.00
+    else
+      teamB_profit
+```

@@ -1,0 +1,46 @@
+# Pattern 23: Financial Bubbles
+
+This pattern models a financial asset bubble with leveraged banking. It shows how high leverage (e.g. 20:1) increases returns during price rises but leads to instant bankruptcy even during a modest (e.g. 10%) price correction.
+
+## Scope Declaration
+
+```catala
+declaration scope Pattern23FinancialBubbles:
+  # State variables
+  input asset_price content money
+  input bank_equity content money
+  input bank_debt content money
+
+  # Action choices
+  input action_bubble_grows content boolean
+  input action_bubble_bursts content boolean
+
+  # Updated state variables
+  output new_asset_price content money
+  output new_bank_equity content money
+  output new_bank_debt content money
+```
+
+## Rules and Definitions
+
+```catala
+scope Pattern23FinancialBubbles:
+  definition new_asset_price equals
+    if action_bubble_grows and asset_price < $120.00 then
+      asset_price + $5.00
+    else if action_bubble_bursts and asset_price >= $110.00 then
+      asset_price - $15.00
+    else
+      asset_price
+
+  definition new_bank_equity equals
+    if action_bubble_grows and asset_price < $120.00 then
+      bank_equity + $5.00
+    else if action_bubble_bursts and asset_price >= $110.00 then
+      bank_equity - $15.00
+    else
+      bank_equity
+
+  definition new_bank_debt equals
+    bank_debt
+```

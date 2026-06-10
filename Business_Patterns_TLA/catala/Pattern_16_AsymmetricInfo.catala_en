@@ -1,0 +1,42 @@
+# Pattern 16: Asymmetric Information
+
+This pattern models Akerlof's "Market for Lemons," showing how asymmetric information drives high-quality sellers out of the market and collapses average prices to the quality level of bad sellers ("lemons").
+
+## Scope Declaration
+
+```catala
+declaration scope Pattern16AsymmetricInfo:
+  # State variables
+  input peaches content integer
+  input lemons content integer
+  input avg_price content money
+
+  # Action choices
+  input action_good_sellers_leave content boolean
+  input action_buyer_recalculates content boolean
+
+  # Updated state variables
+  output new_peaches content integer
+  output new_lemons content integer
+  output new_avg_price content money
+```
+
+## Rules and Definitions
+
+```catala
+scope Pattern16AsymmetricInfo:
+  definition new_peaches equals
+    if action_good_sellers_leave and peaches > 0 and avg_price < $100.00 then
+      0
+    else
+      peaches
+
+  definition new_lemons equals
+    lemons
+
+  definition new_avg_price equals
+    if action_buyer_recalculates and peaches = 0 and lemons > 0 and avg_price > $50.00 then
+      $50.00
+    else
+      avg_price
+```

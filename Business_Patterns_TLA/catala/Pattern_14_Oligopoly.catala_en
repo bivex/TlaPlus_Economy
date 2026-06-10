@@ -1,0 +1,81 @@
+# Pattern 14: Oligopoly
+
+This pattern models oligopoly behavior using Game Theory (Prisoner's Dilemma), showing how competitive defection drives both firms to a Nash equilibrium with suboptimal profits.
+
+## Declarations
+
+```catala
+declaration enumeration GameAction:
+  -- Wait
+  -- Cooperate
+  -- Defect
+
+declaration scope Pattern14Oligopoly:
+  # State variables
+  input actionA content GameAction
+  input actionB content GameAction
+  input profitA content money
+  input profitB content money
+
+  # Action choices
+  input action_firmA_chooses content GameAction
+  input action_firmB_chooses content GameAction
+  input action_resolve_game content boolean
+
+  # Updated state variables
+  output new_actionA content GameAction
+  output new_actionB content GameAction
+  output new_profitA content money
+  output new_profitB content money
+```
+
+## Rules and Definitions
+
+```catala
+scope Pattern14Oligopoly:
+  definition new_actionA equals
+    match actionA with
+      -- Wait: action_firmA_chooses
+      -- Cooperate: actionA
+      -- Defect: actionA
+
+  definition new_actionB equals
+    match actionB with
+      -- Wait: action_firmB_chooses
+      -- Cooperate: actionB
+      -- Defect: actionB
+
+  definition new_profitA equals
+    if action_resolve_game then
+      match new_actionA with
+        -- Wait: $0.00
+        -- Cooperate:
+          match new_actionB with
+            -- Wait: $0.00
+            -- Cooperate: $50.00
+            -- Defect: $0.00
+        -- Defect:
+          match new_actionB with
+            -- Wait: $0.00
+            -- Cooperate: $100.00
+            -- Defect: $10.00
+    else
+      profitA
+
+  definition new_profitB equals
+    if action_resolve_game then
+      match new_actionB with
+        -- Wait: $0.00
+        -- Cooperate:
+          match new_actionA with
+            -- Wait: $0.00
+            -- Cooperate: $50.00
+            -- Defect: $0.00
+        -- Defect:
+          match new_actionA with
+            -- Wait: $0.00
+            -- Cooperate: $100.00
+            -- Defect: $10.00
+    else
+      profitB
+```

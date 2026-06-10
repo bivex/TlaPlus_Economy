@@ -1,0 +1,55 @@
+# Pattern 18: Inflation and Indexation
+
+This pattern models the erosion of nominal revenue by inflation, showing why real purchasing power (real revenue) declines if nominal growth is less than the inflation rate.
+
+## Scope Declaration
+
+```catala
+declaration scope Pattern18Inflation:
+  # Constants (represented as decimals/percentages)
+  input inflation_rate content decimal
+  input nominal_growth content decimal
+
+  # State variables
+  input year content integer
+  input nominal_revenue content money
+  input real_revenue content money
+  input cpi content decimal
+
+  # Action choices
+  input action_next_year content boolean
+
+  # Updated state variables
+  output new_year content integer
+  output new_nominal_revenue content money
+  output new_real_revenue content money
+  output new_cpi content decimal
+```
+
+## Rules and Definitions
+
+```catala
+scope Pattern18Inflation:
+  definition new_year equals
+    if action_next_year and year < 10 then year + 1 else year
+
+  definition new_cpi equals
+    if action_next_year and year < 10 then
+      cpi * (1.0 + inflation_rate)
+    else
+      cpi
+
+  definition new_nominal_revenue equals
+    if action_next_year and year < 10 then
+      nominal_revenue * (1.0 + nominal_growth)
+    else
+      nominal_revenue
+
+  definition new_real_revenue equals
+    if action_next_year and year < 10 then
+      # real_revenue = (nominal_revenue * 100) / cpi
+      # Here cpi starts at 1.0 (equivalent to 100 in base year)
+      nominal_revenue / new_cpi
+    else
+      real_revenue
+```

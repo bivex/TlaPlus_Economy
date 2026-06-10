@@ -1,0 +1,95 @@
+# Pattern 26: Freelance Business
+
+This pattern models a freelance IT business (CMS, bots), integrating marketing, closing, project execution, and overhead expenses to find the optimal path to maximize net profit.
+
+## Scope Declaration
+
+```catala
+declaration scope Pattern26FreelanceBusiness:
+  # Constants
+  input project_price content money
+  input ops_cost_annual content money
+  input production_time content integer
+  input monthly_time_limit content integer
+
+  # State variables
+  input budget content money
+  input time_pool content integer
+  input leads content integer
+  input active_projects content integer
+  input completed_tasks content integer
+  input revenue content money
+  input expenses content money
+
+  # Action choices
+  input action_marketing_work content boolean
+  input action_sales_closing content boolean
+  input action_execute_project content boolean
+  input action_pay_overhead content boolean
+
+  # Updated state variables
+  output new_budget content money
+  output new_time_pool content integer
+  output new_leads content integer
+  output new_active_projects content integer
+  output new_completed_tasks content integer
+  output new_revenue content money
+  output new_expenses content money
+```
+
+## Rules and Definitions
+
+```catala
+scope Pattern26FreelanceBusiness:
+  definition new_time_pool equals
+    if action_marketing_work and time_pool >= 2 then
+      time_pool - 2
+    else if action_sales_closing and leads > 0 and time_pool >= 1 then
+      time_pool - 1
+    else if action_execute_project and active_projects > 0 and time_pool >= production_time then
+      time_pool - production_time
+    else
+      time_pool
+
+  definition new_leads equals
+    if action_marketing_work and time_pool >= 2 then
+      leads + 3
+    else if action_sales_closing and leads > 0 and time_pool >= 1 then
+      leads - 1
+    else
+      leads
+
+  definition new_active_projects equals
+    if action_sales_closing and leads > 0 and time_pool >= 1 then
+      active_projects + 1
+    else if action_execute_project and active_projects > 0 and time_pool >= production_time then
+      active_projects - 1
+    else
+      active_projects
+
+  definition new_completed_tasks equals
+    if action_execute_project and active_projects > 0 and time_pool >= production_time then
+      completed_tasks + 1
+    else
+      completed_tasks
+
+  definition new_revenue equals
+    if action_execute_project and active_projects > 0 and time_pool >= production_time then
+      revenue + project_price
+    else
+      revenue
+
+  definition new_expenses equals
+    if action_pay_overhead and budget >= ops_cost_annual and expenses = $0.00 then
+      ops_cost_annual
+    else
+      expenses
+
+  definition new_budget equals
+    if action_execute_project and active_projects > 0 and time_pool >= production_time then
+      budget + project_price
+    else if action_pay_overhead and budget >= ops_cost_annual and expenses = $0.00 then
+      budget - ops_cost_annual
+    else
+      budget
+```

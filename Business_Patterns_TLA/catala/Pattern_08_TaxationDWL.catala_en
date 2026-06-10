@@ -1,0 +1,53 @@
+# Pattern 08: Taxation and DWL
+
+This pattern models the impact of platform fees/taxes on transaction volume, demonstrating deadweight loss (DWL) when a tax makes a trade mutually unprofitable.
+
+## Scope Declaration
+
+```catala
+declaration scope Pattern08TaxationDWL:
+  # State variables
+  input tax content money
+  input buyer_wtp content money
+  input seller_cost content money
+  input state_revenue content money
+  input deadweight_loss content money
+  input deals_done content integer
+
+  # Action choices
+  input action_attempt_trade content boolean
+
+  # Updated state variables
+  output new_state_revenue content money
+  output new_deadweight_loss content money
+  output new_deals_done content integer
+```
+
+## Rules and Definitions
+
+```catala
+scope Pattern08TaxationDWL:
+  definition new_deals_done equals
+    if action_attempt_trade and deals_done < 10 then
+      deals_done + 1
+    else
+      deals_done
+
+  definition new_state_revenue equals
+    if action_attempt_trade and deals_done < 10 then
+      if (buyer_wtp - tax) >= seller_cost then
+        state_revenue + tax
+      else
+        state_revenue
+    else
+      state_revenue
+
+  definition new_deadweight_loss equals
+    if action_attempt_trade and deals_done < 10 then
+      if (buyer_wtp - tax) >= seller_cost then
+        deadweight_loss
+      else
+        deadweight_loss + (buyer_wtp - seller_cost)
+    else
+      deadweight_loss
+```

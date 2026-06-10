@@ -1,0 +1,87 @@
+# Pattern 28: Content Strategy
+
+This pattern models resource planning for a multi-channel content strategy, analyzing the time spent and audience warm-up KPI achieved when creating Shorts, full YouTube videos, and expert blog posts.
+
+## Scope Declaration
+
+```catala
+declaration scope Pattern28ContentStrategy:
+  # Constants
+  input setup_time content integer
+  input shorts_time content integer
+  input youtube_time content integer
+  input post_time content integer
+  input max_cases content integer
+
+  # State variables
+  input accounts_ready content boolean
+  input cases_shorts content integer
+  input cases_youtube content integer
+  input cases_posts content integer
+  input total_hours content integer
+  input warm_up_level content integer
+
+  # Action choices
+  input action_setup_accounts content boolean
+  input action_create_shorts content boolean
+  input action_create_youtube content boolean
+  input action_create_post content boolean
+
+  # Updated state variables
+  output new_accounts_ready content boolean
+  output new_cases_shorts content integer
+  output new_cases_youtube content integer
+  output new_cases_posts content integer
+  output new_total_hours content integer
+  output new_warm_up_level content integer
+```
+
+## Rules and Definitions
+
+```catala
+scope Pattern28ContentStrategy:
+  definition new_accounts_ready equals
+    if action_setup_accounts and not accounts_ready then true else accounts_ready
+
+  definition new_cases_shorts equals
+    if action_create_shorts and accounts_ready and cases_shorts < max_cases then
+      cases_shorts + 1
+    else
+      cases_shorts
+
+  definition new_cases_youtube equals
+    if action_create_youtube and accounts_ready and cases_youtube < max_cases then
+      cases_youtube + 1
+    else
+      cases_youtube
+
+  definition new_cases_posts equals
+    if action_create_post and accounts_ready and cases_posts < max_cases then
+      cases_posts + 1
+    else
+      cases_posts
+
+  definition new_total_hours equals
+    if action_setup_accounts and not accounts_ready then
+      total_hours + setup_time
+    else if action_create_shorts and accounts_ready and cases_shorts < max_cases then
+      total_hours + shorts_time
+    else if action_create_youtube and accounts_ready and cases_youtube < max_cases then
+      total_hours + youtube_time
+    else if action_create_post and accounts_ready and cases_posts < max_cases then
+      total_hours + post_time
+    else
+      total_hours
+
+  definition new_warm_up_level equals
+    if action_setup_accounts and not accounts_ready then
+      warm_up_level + 5
+    else if action_create_shorts and accounts_ready and cases_shorts < max_cases then
+      warm_up_level + 10
+    else if action_create_youtube and accounts_ready and cases_youtube < max_cases then
+      warm_up_level + 25
+    else if action_create_post and accounts_ready and cases_posts < max_cases then
+      warm_up_level + 15
+    else
+      warm_up_level
+```
