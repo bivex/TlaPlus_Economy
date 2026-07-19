@@ -1,15 +1,12 @@
 -------------------- MODULE Pattern_35_MultiServiceFreelance --------------------
 (*
-Цей паттерн моделює РЕАЛІСТИЧНУ роботу багатопрофільного фрилансера в Україні.
-Для прискорення верифікації обрано 3 представницькі класи послуг з прайс-листа:
-- Дешеві швидкі замовлення (bot): 300 UAH (1 година номінал, +2 години ризик)
-- Середні замовлення розробки (coding_mid): 1500 UAH (6 годин номінал, +6 годин ризик)
-- Дорогі блокчейн-проєкти (blockchain): 2500 UAH (11 годин номінал, +15 годин ризик)
-
+Цей паттерн моделює РЕАЛІСТИЧНУ роботу багатопрофільного фрилансера в Україні у 2026 році.
 Враховує:
-1. Вартість перемикання контексту (Context Switching): -2 години при зміні типу замовлень.
-2. Ризик у продажах (Sales Conversion Risk): зідзвон (1 година) може завершитися невдачею.
-3. Проєктні ризики (Project Overruns): затримки через вимоги клієнта чи баги.
+1. Обов'язковість сплати накладних витрат (overhead_paid) для досягнення цілі.
+2. Реалістичні ціни та премію за ризик (Risk Premium), особливо для Блокчейну.
+3. Податки та збори у 2026 році (ЄСВ 1902 UAH + ЄП 5% + ВЗ 1%).
+4. Ризики відключень світла (Blackouts) як форс-мажорів, що забирають час та збільшують витрати.
+5. Штраф за перемикання контексту (-2 години) та ризики зриву дедлайнів/продажів.
 *)
 EXTENDS Naturals, Integers, TLC
 
@@ -22,31 +19,32 @@ VARIABLES
     active_projects,  \* Функція [SERVICES -> Nat] (активні проєкти в роботі)
     completed_tasks,  \* Функція [SERVICES -> Nat] (виконані проєкти)
     revenue,          \* Загальний дохід
-    expenses,         \* Загальні витрати
-    last_service      \* Останній вид діяльності (для штрафу перемикання контексту)
+    expenses,         \* Загальні витрати (податки, софт, форс-мажори)
+    last_service,     \* Останній вид діяльності (для штрафу перемикання контексту)
+    overhead_paid     \* Прапор обов'язкової сплати накладних витрат/податків
 
-vars == <<budget, time_pool, leads, active_projects, completed_tasks, revenue, expenses, last_service>>
+vars == <<budget, time_pool, leads, active_projects, completed_tasks, revenue, expenses, last_service, overhead_paid>>
 
 CONSTANT MONTHLY_TIME_LIMIT   \* 160 годин
-CONSTANT OVERHEAD_COST        \* Накладні витрати (1500 UAH)
+CONSTANT OVERHEAD_COST        \* Фіксовані налоги та софт (~2700 UAH: ЄСВ 1902.34 + ЄП + ВЗ + софт)
 
-\* Ціни послуг (UAH)
+\* Ціни послуг з урахуванням премії за ризик (UAH)
 ServicePrice(s) ==
-    IF s = "bot" THEN 300
-    ELSE IF s = "coding_mid" THEN 1500
-    ELSE 2500 \* blockchain
+    IF s = "bot" THEN 800             \* Підняли ціну за бота
+    ELSE IF s = "coding_mid" THEN 4000 \* Реалістичний середній чек
+    ELSE 12000                        \* Blockchain з урахуванням високої кваліфікації та ризиків
 
 \* Номінальний час розробки (годин)
 ServiceTime(s) ==
-    IF s = "bot" THEN 1
-    ELSE IF s = "coding_mid" THEN 6
-    ELSE 11 \* blockchain
+    IF s = "bot" THEN 2
+    ELSE IF s = "coding_mid" THEN 10
+    ELSE 16
 
-\* Ризик затягування проєкту (оверхед у годинах у разі ускладнень)
+\* Ризик затягування проєкту (оверхед у годинах у разі факапу/змін від клієнта)
 RiskTime(s) ==
     IF s = "bot" THEN 2
     ELSE IF s = "coding_mid" THEN 6
-    ELSE 15 \* blockchain (дуже високий ризик)
+    ELSE 15 \* Blockchain (високий ризик, але тепер компенсується чеком)
 
 TypeOK ==
     /\ budget \in Int
@@ -57,9 +55,10 @@ TypeOK ==
     /\ revenue \in Nat
     /\ expenses \in Nat
     /\ last_service \in SERVICES \union {"none", "marketing", "sales"}
+    /\ overhead_paid \in BOOLEAN
 
 Init ==
-    /\ budget = 1000
+    /\ budget = 3000         \* Стартовий бюджет підвищено для сплати податків
     /\ time_pool = MONTHLY_TIME_LIMIT
     /\ leads = [s \in SERVICES |-> 0]
     /\ active_projects = [s \in SERVICES |-> 0]
@@ -67,6 +66,7 @@ Init ==
     /\ revenue = 0
     /\ expenses = 0
     /\ last_service = "none"
+    /\ overhead_paid = FALSE
 
 (* 1. Маркетинг: витрачаємо 4 години. Отримуємо лідів. *)
 MarketingWork ==
@@ -77,7 +77,7 @@ MarketingWork ==
                     ELSE IF s = "coding_mid" THEN leads[s] + 1
                     ELSE leads[s] + 1]
     /\ last_service' = "marketing"
-    /\ UNCHANGED <<budget, active_projects, completed_tasks, revenue, expenses>>
+    /\ UNCHANGED <<budget, active_projects, completed_tasks, revenue, expenses, overhead_paid>>
 
 (* 2. Продажі: зідзвон з лідом (1 година). Два варіанти (успіх/фейл). *)
 SalesSuccess(s) ==
@@ -87,7 +87,7 @@ SalesSuccess(s) ==
     /\ leads' = [leads EXCEPT ![s] = leads[s] - 1]
     /\ active_projects' = [active_projects EXCEPT ![s] = active_projects[s] + 1]
     /\ last_service' = "sales"
-    /\ UNCHANGED <<budget, completed_tasks, revenue, expenses>>
+    /\ UNCHANGED <<budget, completed_tasks, revenue, expenses, overhead_paid>>
 
 SalesFailure(s) ==
     /\ leads[s] > 0
@@ -95,7 +95,7 @@ SalesFailure(s) ==
     /\ time_pool' = time_pool - 1
     /\ leads' = [leads EXCEPT ![s] = leads[s] - 1]
     /\ last_service' = "sales"
-    /\ UNCHANGED <<budget, active_projects, completed_tasks, revenue, expenses>>
+    /\ UNCHANGED <<budget, active_projects, completed_tasks, revenue, expenses, overhead_paid>>
 
 (* 3. Виконання проєкту (номінальний час або оверран).
    Якщо тип роботи змінився, додається штраф 2 години за перемикання контексту. *)
@@ -109,7 +109,7 @@ ExecuteNominal(s) ==
     /\ budget' = budget + ServicePrice(s)
     /\ revenue' = revenue + ServicePrice(s)
     /\ last_service' = s
-    /\ UNCHANGED <<leads, expenses>>
+    /\ UNCHANGED <<leads, expenses, overhead_paid>>
 
 ExecuteWithOverrun(s) ==
     /\ active_projects[s] > 0
@@ -122,32 +122,46 @@ ExecuteWithOverrun(s) ==
     /\ budget' = budget + ServicePrice(s)
     /\ revenue' = revenue + ServicePrice(s)
     /\ last_service' = s
-    /\ UNCHANGED <<leads, expenses>>
+    /\ UNCHANGED <<leads, expenses, overhead_paid>>
 
-(* 4. Оплата накладних витрат *)
+(* 4. Оплата обов'язкових податків та оверхеду (ЄСВ, софт, ведення ФОП) *)
 PayOverhead ==
     /\ budget >= OVERHEAD_COST
-    /\ expenses = 0
+    /\ ~overhead_paid
     /\ budget' = budget - OVERHEAD_COST
-    /\ expenses' = OVERHEAD_COST
+    /\ expenses' = expenses + OVERHEAD_COST
+    /\ overhead_paid' = TRUE
     /\ last_service' = "none"
     /\ UNCHANGED <<time_pool, leads, active_projects, completed_tasks, revenue>>
+
+(* 5. Форс-мажор: Відключення світла (Blackout).
+   Зменшує вільний час фрилансера на 6 годин (простій або пошук коворкінгу) 
+   та несе фінансові витрати (паливо для генератора або коворкінг — 300 UAH).
+   Перериває поточний робочий контекст. *)
+BlackoutEvent ==
+    /\ time_pool >= 6
+    /\ time_pool' = time_pool - 6
+    /\ expenses' = expenses + 300
+    /\ budget' = budget - 300
+    /\ last_service' = "none"
+    /\ UNCHANGED <<leads, active_projects, completed_tasks, revenue, overhead_paid>>
 
 Next ==
     \/ MarketingWork
     \/ (\E s \in SERVICES : SalesSuccess(s) \/ SalesFailure(s))
     \/ (\E s \in SERVICES : ExecuteNominal(s) \/ ExecuteWithOverrun(s))
     \/ PayOverhead
+    \/ BlackoutEvent
 
 Spec == Init /\ [][Next]_vars
 
 StateConstraint ==
-    /\ budget <= 40000
-    /\ \A s \in SERVICES : completed_tasks[s] <= 15
-    /\ \A s \in SERVICES : leads[s] <= 30
+    /\ budget <= 50000
+    /\ \A s \in SERVICES : completed_tasks[s] <= 8
+    /\ \A s \in SERVICES : leads[s] <= 20
     /\ \A s \in SERVICES : active_projects[s] <= 5
 
-(* РЕАЛІСТИЧНА ЦІЛЬ: заробити чистими 12,000 UAH за місяць *)
-GoalNotReached == (revenue - expenses) < 12000
+(* РЕАЛІСТИЧНА ЦІЛЬ: заробити чистими не менше 15,000 UAH за місяць З УРАХУВАННЯМ сплати податків *)
+GoalNotReached == ~(overhead_paid /\ (revenue - expenses) >= 15000)
 
 =============================================================================
