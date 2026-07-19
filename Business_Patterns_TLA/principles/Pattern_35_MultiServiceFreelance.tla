@@ -59,7 +59,7 @@ TypeOK ==
 Init ==
     /\ budget = 3000
     /\ time_pool = MONTHLY_TIME_LIMIT
-    /\ leads = [s \in SERVICES |-> 0]
+    /\ leads = [bot |-> 3, coding_mid |-> 2]
     /\ active_projects = [s \in SERVICES |-> 0]
     /\ completed_tasks = [s \in SERVICES |-> 0]
     /\ revenue = 0
@@ -71,6 +71,7 @@ Init ==
 
 (* 1. Маркетинг: витрачаємо 4 години. Отримуємо лідів. *)
 MarketingWork ==
+    /\ completed_tasks["bot"] + completed_tasks["coding_mid"] >= 2
     /\ time_pool >= 4
     /\ time_pool' = time_pool - 4
     /\ leads' = [s \in SERVICES |->

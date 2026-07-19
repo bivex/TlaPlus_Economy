@@ -1,4 +1,4 @@
----- MODULE Pattern_35_MultiServiceFreelance_TTrace_1784491158 ----
+---- MODULE Pattern_35_MultiServiceFreelance_TTrace_1784491360 ----
 EXTENDS Pattern_35_MultiServiceFreelance, Sequences, TLCExt, Toolbox, Naturals, TLC
 
 _expression ==
@@ -21,13 +21,13 @@ _inv ==
         /\
         overhead_paid = (TRUE)
         /\
-        time_pool = (99)
+        time_pool = (109)
         /\
         retainers = (0)
         /\
         active_projects = ([bot |-> 0, coding_mid |-> 0])
         /\
-        leads = ([bot |-> 5, coding_mid |-> 0])
+        leads = ([bot |-> 4, coding_mid |-> 0])
         /\
         completed_tasks = ([bot |-> 2, coding_mid |-> 3])
         /\
@@ -85,7 +85,7 @@ _next ==
 \* to `JsonSerialize`. For example, a sub-sequence of _TETrace.
     \* ASSUME
     \*     LET J == INSTANCE Json
-    \*         IN J!JsonSerialize("Pattern_35_MultiServiceFreelance_TTrace_1784491158.json", _TETrace)
+    \*         IN J!JsonSerialize("Pattern_35_MultiServiceFreelance_TTrace_1784491360.json", _TETrace)
 
 =============================================================================
 
@@ -147,7 +147,7 @@ Parsing and semantic processing can take forever if the trace below is long.
 \*---- MODULE Pattern_35_MultiServiceFreelance_TETrace ----
 \*EXTENDS Pattern_35_MultiServiceFreelance, IOUtils, TLC
 \*
-\*trace == IODeserialize("Pattern_35_MultiServiceFreelance_TTrace_1784491158.bin", TRUE)
+\*trace == IODeserialize("Pattern_35_MultiServiceFreelance_TTrace_1784491360.bin", TRUE)
 \*
 \*=============================================================================
 \*
@@ -157,31 +157,27 @@ EXTENDS Pattern_35_MultiServiceFreelance, TLC
 
 trace == 
     <<
-    ([last_service |-> "none",revenue |-> 0,overhead_paid |-> FALSE,time_pool |-> 160,retainers |-> 0,active_projects |-> [bot |-> 0, coding_mid |-> 0],leads |-> [bot |-> 0, coding_mid |-> 0],completed_tasks |-> [bot |-> 0, coding_mid |-> 0],budget |-> 3000,expenses |-> 0,retainers_collected |-> FALSE]),
-    ([last_service |-> "marketing",revenue |-> 0,overhead_paid |-> FALSE,time_pool |-> 156,retainers |-> 0,active_projects |-> [bot |-> 0, coding_mid |-> 0],leads |-> [bot |-> 3, coding_mid |-> 1],completed_tasks |-> [bot |-> 0, coding_mid |-> 0],budget |-> 3000,expenses |-> 0,retainers_collected |-> FALSE]),
-    ([last_service |-> "sales",revenue |-> 0,overhead_paid |-> FALSE,time_pool |-> 155,retainers |-> 0,active_projects |-> [bot |-> 1, coding_mid |-> 0],leads |-> [bot |-> 2, coding_mid |-> 1],completed_tasks |-> [bot |-> 0, coding_mid |-> 0],budget |-> 3000,expenses |-> 0,retainers_collected |-> FALSE]),
-    ([last_service |-> "marketing",revenue |-> 0,overhead_paid |-> FALSE,time_pool |-> 151,retainers |-> 0,active_projects |-> [bot |-> 1, coding_mid |-> 0],leads |-> [bot |-> 5, coding_mid |-> 2],completed_tasks |-> [bot |-> 0, coding_mid |-> 0],budget |-> 3000,expenses |-> 0,retainers_collected |-> FALSE]),
-    ([last_service |-> "sales",revenue |-> 0,overhead_paid |-> FALSE,time_pool |-> 150,retainers |-> 0,active_projects |-> [bot |-> 2, coding_mid |-> 0],leads |-> [bot |-> 4, coding_mid |-> 2],completed_tasks |-> [bot |-> 0, coding_mid |-> 0],budget |-> 3000,expenses |-> 0,retainers_collected |-> FALSE]),
-    ([last_service |-> "sales",revenue |-> 0,overhead_paid |-> FALSE,time_pool |-> 149,retainers |-> 0,active_projects |-> [bot |-> 2, coding_mid |-> 0],leads |-> [bot |-> 3, coding_mid |-> 2],completed_tasks |-> [bot |-> 0, coding_mid |-> 0],budget |-> 3000,expenses |-> 0,retainers_collected |-> FALSE]),
-    ([last_service |-> "sales",revenue |-> 0,overhead_paid |-> FALSE,time_pool |-> 148,retainers |-> 0,active_projects |-> [bot |-> 2, coding_mid |-> 0],leads |-> [bot |-> 2, coding_mid |-> 2],completed_tasks |-> [bot |-> 0, coding_mid |-> 0],budget |-> 3000,expenses |-> 0,retainers_collected |-> FALSE]),
-    ([last_service |-> "marketing",revenue |-> 0,overhead_paid |-> FALSE,time_pool |-> 144,retainers |-> 0,active_projects |-> [bot |-> 2, coding_mid |-> 0],leads |-> [bot |-> 5, coding_mid |-> 3],completed_tasks |-> [bot |-> 0, coding_mid |-> 0],budget |-> 3000,expenses |-> 0,retainers_collected |-> FALSE]),
-    ([last_service |-> "affiliate",revenue |-> 3750,overhead_paid |-> FALSE,time_pool |-> 142,retainers |-> 0,active_projects |-> [bot |-> 2, coding_mid |-> 0],leads |-> [bot |-> 5, coding_mid |-> 3],completed_tasks |-> [bot |-> 0, coding_mid |-> 0],budget |-> 4250,expenses |-> 2500,retainers_collected |-> FALSE]),
-    ([last_service |-> "sales",revenue |-> 3750,overhead_paid |-> FALSE,time_pool |-> 141,retainers |-> 0,active_projects |-> [bot |-> 2, coding_mid |-> 1],leads |-> [bot |-> 5, coding_mid |-> 2],completed_tasks |-> [bot |-> 0, coding_mid |-> 0],budget |-> 4250,expenses |-> 2500,retainers_collected |-> FALSE]),
-    ([last_service |-> "sales",revenue |-> 3750,overhead_paid |-> FALSE,time_pool |-> 140,retainers |-> 0,active_projects |-> [bot |-> 2, coding_mid |-> 2],leads |-> [bot |-> 5, coding_mid |-> 1],completed_tasks |-> [bot |-> 0, coding_mid |-> 0],budget |-> 4250,expenses |-> 2500,retainers_collected |-> FALSE]),
-    ([last_service |-> "bot",revenue |-> 4550,overhead_paid |-> FALSE,time_pool |-> 136,retainers |-> 0,active_projects |-> [bot |-> 1, coding_mid |-> 2],leads |-> [bot |-> 5, coding_mid |-> 1],completed_tasks |-> [bot |-> 1, coding_mid |-> 0],budget |-> 5050,expenses |-> 2500,retainers_collected |-> FALSE]),
-    ([last_service |-> "bot",revenue |-> 5350,overhead_paid |-> FALSE,time_pool |-> 134,retainers |-> 0,active_projects |-> [bot |-> 0, coding_mid |-> 2],leads |-> [bot |-> 5, coding_mid |-> 1],completed_tasks |-> [bot |-> 2, coding_mid |-> 0],budget |-> 5850,expenses |-> 2500,retainers_collected |-> FALSE]),
-    ([last_service |-> "coding_mid",revenue |-> 9350,overhead_paid |-> FALSE,time_pool |-> 122,retainers |-> 0,active_projects |-> [bot |-> 0, coding_mid |-> 1],leads |-> [bot |-> 5, coding_mid |-> 1],completed_tasks |-> [bot |-> 2, coding_mid |-> 1],budget |-> 9850,expenses |-> 2500,retainers_collected |-> FALSE]),
-    ([last_service |-> "sales",revenue |-> 9350,overhead_paid |-> FALSE,time_pool |-> 121,retainers |-> 0,active_projects |-> [bot |-> 0, coding_mid |-> 2],leads |-> [bot |-> 5, coding_mid |-> 0],completed_tasks |-> [bot |-> 2, coding_mid |-> 1],budget |-> 9850,expenses |-> 2500,retainers_collected |-> FALSE]),
-    ([last_service |-> "coding_mid",revenue |-> 13350,overhead_paid |-> FALSE,time_pool |-> 109,retainers |-> 0,active_projects |-> [bot |-> 0, coding_mid |-> 1],leads |-> [bot |-> 5, coding_mid |-> 0],completed_tasks |-> [bot |-> 2, coding_mid |-> 2],budget |-> 13850,expenses |-> 2500,retainers_collected |-> FALSE]),
-    ([last_service |-> "coding_mid",revenue |-> 17350,overhead_paid |-> FALSE,time_pool |-> 99,retainers |-> 0,active_projects |-> [bot |-> 0, coding_mid |-> 0],leads |-> [bot |-> 5, coding_mid |-> 0],completed_tasks |-> [bot |-> 2, coding_mid |-> 3],budget |-> 17850,expenses |-> 2500,retainers_collected |-> FALSE]),
-    ([last_service |-> "none",revenue |-> 17350,overhead_paid |-> TRUE,time_pool |-> 99,retainers |-> 0,active_projects |-> [bot |-> 0, coding_mid |-> 0],leads |-> [bot |-> 5, coding_mid |-> 0],completed_tasks |-> [bot |-> 2, coding_mid |-> 3],budget |-> 15150,expenses |-> 5200,retainers_collected |-> FALSE])
+    ([last_service |-> "none",revenue |-> 0,overhead_paid |-> FALSE,time_pool |-> 160,retainers |-> 0,active_projects |-> [bot |-> 0, coding_mid |-> 0],leads |-> [bot |-> 3, coding_mid |-> 2],completed_tasks |-> [bot |-> 0, coding_mid |-> 0],budget |-> 3000,expenses |-> 0,retainers_collected |-> FALSE]),
+    ([last_service |-> "sales",revenue |-> 0,overhead_paid |-> FALSE,time_pool |-> 159,retainers |-> 0,active_projects |-> [bot |-> 1, coding_mid |-> 0],leads |-> [bot |-> 2, coding_mid |-> 2],completed_tasks |-> [bot |-> 0, coding_mid |-> 0],budget |-> 3000,expenses |-> 0,retainers_collected |-> FALSE]),
+    ([last_service |-> "sales",revenue |-> 0,overhead_paid |-> FALSE,time_pool |-> 158,retainers |-> 0,active_projects |-> [bot |-> 2, coding_mid |-> 0],leads |-> [bot |-> 1, coding_mid |-> 2],completed_tasks |-> [bot |-> 0, coding_mid |-> 0],budget |-> 3000,expenses |-> 0,retainers_collected |-> FALSE]),
+    ([last_service |-> "sales",revenue |-> 0,overhead_paid |-> FALSE,time_pool |-> 157,retainers |-> 0,active_projects |-> [bot |-> 2, coding_mid |-> 1],leads |-> [bot |-> 1, coding_mid |-> 1],completed_tasks |-> [bot |-> 0, coding_mid |-> 0],budget |-> 3000,expenses |-> 0,retainers_collected |-> FALSE]),
+    ([last_service |-> "sales",revenue |-> 0,overhead_paid |-> FALSE,time_pool |-> 156,retainers |-> 0,active_projects |-> [bot |-> 2, coding_mid |-> 2],leads |-> [bot |-> 1, coding_mid |-> 0],completed_tasks |-> [bot |-> 0, coding_mid |-> 0],budget |-> 3000,expenses |-> 0,retainers_collected |-> FALSE]),
+    ([last_service |-> "bot",revenue |-> 800,overhead_paid |-> FALSE,time_pool |-> 152,retainers |-> 0,active_projects |-> [bot |-> 1, coding_mid |-> 2],leads |-> [bot |-> 1, coding_mid |-> 0],completed_tasks |-> [bot |-> 1, coding_mid |-> 0],budget |-> 3800,expenses |-> 0,retainers_collected |-> FALSE]),
+    ([last_service |-> "bot",revenue |-> 1600,overhead_paid |-> FALSE,time_pool |-> 150,retainers |-> 0,active_projects |-> [bot |-> 0, coding_mid |-> 2],leads |-> [bot |-> 1, coding_mid |-> 0],completed_tasks |-> [bot |-> 2, coding_mid |-> 0],budget |-> 4600,expenses |-> 0,retainers_collected |-> FALSE]),
+    ([last_service |-> "marketing",revenue |-> 1600,overhead_paid |-> FALSE,time_pool |-> 146,retainers |-> 0,active_projects |-> [bot |-> 0, coding_mid |-> 2],leads |-> [bot |-> 4, coding_mid |-> 1],completed_tasks |-> [bot |-> 2, coding_mid |-> 0],budget |-> 4600,expenses |-> 0,retainers_collected |-> FALSE]),
+    ([last_service |-> "affiliate",revenue |-> 5350,overhead_paid |-> FALSE,time_pool |-> 144,retainers |-> 0,active_projects |-> [bot |-> 0, coding_mid |-> 2],leads |-> [bot |-> 4, coding_mid |-> 1],completed_tasks |-> [bot |-> 2, coding_mid |-> 0],budget |-> 5850,expenses |-> 2500,retainers_collected |-> FALSE]),
+    ([last_service |-> "coding_mid",revenue |-> 9350,overhead_paid |-> FALSE,time_pool |-> 132,retainers |-> 0,active_projects |-> [bot |-> 0, coding_mid |-> 1],leads |-> [bot |-> 4, coding_mid |-> 1],completed_tasks |-> [bot |-> 2, coding_mid |-> 1],budget |-> 9850,expenses |-> 2500,retainers_collected |-> FALSE]),
+    ([last_service |-> "sales",revenue |-> 9350,overhead_paid |-> FALSE,time_pool |-> 131,retainers |-> 0,active_projects |-> [bot |-> 0, coding_mid |-> 2],leads |-> [bot |-> 4, coding_mid |-> 0],completed_tasks |-> [bot |-> 2, coding_mid |-> 1],budget |-> 9850,expenses |-> 2500,retainers_collected |-> FALSE]),
+    ([last_service |-> "coding_mid",revenue |-> 13350,overhead_paid |-> FALSE,time_pool |-> 119,retainers |-> 0,active_projects |-> [bot |-> 0, coding_mid |-> 1],leads |-> [bot |-> 4, coding_mid |-> 0],completed_tasks |-> [bot |-> 2, coding_mid |-> 2],budget |-> 13850,expenses |-> 2500,retainers_collected |-> FALSE]),
+    ([last_service |-> "coding_mid",revenue |-> 17350,overhead_paid |-> FALSE,time_pool |-> 109,retainers |-> 0,active_projects |-> [bot |-> 0, coding_mid |-> 0],leads |-> [bot |-> 4, coding_mid |-> 0],completed_tasks |-> [bot |-> 2, coding_mid |-> 3],budget |-> 17850,expenses |-> 2500,retainers_collected |-> FALSE]),
+    ([last_service |-> "none",revenue |-> 17350,overhead_paid |-> TRUE,time_pool |-> 109,retainers |-> 0,active_projects |-> [bot |-> 0, coding_mid |-> 0],leads |-> [bot |-> 4, coding_mid |-> 0],completed_tasks |-> [bot |-> 2, coding_mid |-> 3],budget |-> 15150,expenses |-> 5200,retainers_collected |-> FALSE])
     >>
 ----
 
 
 =============================================================================
 
----- CONFIG Pattern_35_MultiServiceFreelance_TTrace_1784491158 ----
+---- CONFIG Pattern_35_MultiServiceFreelance_TTrace_1784491360 ----
 CONSTANTS
     MONTHLY_TIME_LIMIT = 160
     OVERHEAD_COST = 2700
@@ -205,4 +201,4 @@ CONSTANT
 ALIAS
     _expression
 =============================================================================
-\* Generated on Sun Jul 19 22:59:21 EEST 2026
+\* Generated on Sun Jul 19 23:02:41 EEST 2026
