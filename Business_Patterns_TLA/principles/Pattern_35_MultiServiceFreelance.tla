@@ -10,7 +10,7 @@
 *)
 EXTENDS Naturals, Integers, TLC
 
-SERVICES == {"bot", "coding_mid", "blockchain"}
+SERVICES == {"bot", "coding_mid"}
 
 VARIABLES
     budget,           \* Бюджет (готівка в UAH)
